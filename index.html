@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GovServe – Digital Government Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root {
+      --navy:      #0f2447;
+      --blue:      #1a4b8c;
+      --accent:    #3b82f6;
+      --gold:      #f59e0b;
+      --light:     #e8f0fe;
+      --mist:      #f0f4ff;
+      --text:      #1e293b;
+      --muted:     #64748b;
+      --white:     #ffffff;
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--mist);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59,130,246,.13) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(245,158,11,.09) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 60% 30%, rgba(26,75,140,.10) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgShift 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0%   { opacity: 1; transform: scale(1); }
+      100% { opacity: .85; transform: scale(1.04); }
+    }
+
+    /* floating particles */
+    .particles { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .25;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: .25; }
+      90%  { opacity: .15; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 60px;
+      height: 72px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 4px 24px rgba(15,36,71,.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown .8s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-80px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59,130,246,.4);
+    }
+
+    .logo span { color: var(--accent); }
+
+    ul {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+    }
+
+    ul li a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: .2px;
+      position: relative;
+      transition: color .25s;
+    }
+
+    ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width .3s cubic-bezier(.22,1,.36,1);
+    }
+
+    ul li a:hover { color: var(--navy); }
+    ul li a:hover::after { width: 100%; }
+
+    .buttons { display: flex; gap: 12px; }
+
+    button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+
+    .login-btn {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59,130,246,.35);
+    }
+
+    .signup-btn {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(15,36,71,.25);
+    }
+
+    button:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    }
+
+    button:active { transform: scale(.97); }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 24px 120px;
+      min-height: calc(100vh - 72px);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59,130,246,.12);
+      border: 1px solid rgba(59,130,246,.25);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      animation: fadeUp .8s .2s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(59,130,246,.25); }
+      50%       { box-shadow: 0 0 0 7px rgba(59,130,246,.08); }
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+      max-width: 820px;
+      animation: fadeUp .9s .35s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 6px;
+      background: rgba(59,130,246,.18);
+      border-radius: 3px;
+      z-index: -1;
+    }
+
+    .hero p {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+      font-weight: 400;
+      animation: fadeUp 1s .5s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 1s .65s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .hero-buttons .login-btn {
+      padding: 15px 36px;
+      font-size: 16px;
+      border-radius: 12px;
+    }
+
+    .hero-buttons .signup-btn {
+      padding: 15px 36px;
+      font-size: 16px;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--navy);
+      box-shadow: none;
+    }
+
+    .hero-buttons .signup-btn:hover {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 10px 28px rgba(15,36,71,.2);
+    }
+
+    /* stats row */
+    .stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 1s .8s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: .3px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 44px;
+      background: rgba(15,36,71,.12);
+      align-self: center;
+    }
+
+    /* service cards */
+    .services {
+      padding: 80px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+      animation: fadeUp 1s 1s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 48px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 20px;
+      padding: 32px 28px;
+      transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s cubic-bezier(.22,1,.36,1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px rgba(15,36,71,.12);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── Animations (shared) ── */
+    @keyframes fadeUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+
+    /* ── HAMBURGER MENU ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2.5px;
+      background: var(--navy);
+      border-radius: 2px;
+      transition: .3s;
+    }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    .nav-menu { display: flex; align-items: center; gap: 36px; }
+
+    /* ── RESPONSIVE ── */
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      nav { padding: 0 32px; }
+
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .services { padding: 60px 32px; }
+
+      ul { gap: 24px; }
+    }
+
+    /* Mobile / Small Tablet */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 20px;
+        height: 64px;
+        position: relative;
+      }
+
+      .hamburger { display: flex; }
+
+      .nav-menu {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        background: rgba(255,255,255,.97);
+        backdrop-filter: blur(20px);
+        padding: 20px 24px 28px;
+        box-shadow: 0 16px 40px rgba(0,0,0,.12);
+        gap: 0;
+        border-top: 1px solid rgba(0,0,0,.06);
+        z-index: 200;
+      }
+
+      .nav-menu.open { display: flex; }
+
+      ul {
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+      }
+
+      ul li a {
+        display: block;
+        padding: 13px 0;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(0,0,0,.06);
+      }
+
+      .buttons {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 16px;
+        gap: 10px;
+      }
+
+      .buttons button { width: 100%; padding: 13px; font-size: 15px; }
+
+      .hero { padding: 60px 20px 80px; }
+
+      .hero h1 { letter-spacing: -.5px; }
+
+      .hero-buttons { flex-direction: column; width: 100%; max-width: 340px; }
+      .hero-buttons button { width: 100%; padding: 15px; }
+
+      .stats { gap: 20px; }
+      .stat-divider { display: none; }
+
+      .cards-grid { grid-template-columns: 1fr; }
+      .services { padding: 48px 20px 60px; }
+    }
+
+    /* Small mobile */
+    @media (max-width: 420px) {
+      .logo { font-size: 22px; }
+      .logo-icon { width: 30px; height: 30px; font-size: 15px; }
+      .stat-number { font-size: 26px; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">
+      <div class="logo-icon">🏛️</div>
+      Gov<span>Serve</span>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-menu" id="navMenu">
+      <ul>
+        <li><a href="404ErrorPage.html">Home</a></li>
+        <li><a href="404ErrorPage.html">Services</a></li>
+        <li><a href="404ErrorPage.html">About</a></li>
+        <li><a href="404ErrorPage.html">Contact</a></li>
+      </ul>
+
+      <div class="buttons">
+        <button class="login-btn"  onclick="goToLogin()">Login</button>
+        <button class="signup-btn" onclick="goToSignup()">Sign Up</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="badge">🇮🇳 Official Digital Platform</div>
+
+    <h1>Your Gateway to <em>Smarter</em><br>Government Services</h1>
+
+    <p>
+      A unified, secure platform connecting citizens with essential government
+      services — from document applications to approvals, all in one place.
+      Fast, transparent, and built for everyone.
+    </p>
+
+    <div class="hero-buttons">
+      <button class="login-btn"  onclick="goToLogin()">Get Started &rarr;</button>
+      <button class="signup-btn" onclick="goToSignup()">Create Free Account</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-number" data-target="2.4">0</span>
+        <span class="stat-label">Million Citizens</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number" data-target="120">0</span>
+        <span class="stat-label">Services Available</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number" data-target="98">0</span>
+        <span class="stat-label">% Uptime SLA</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number" data-target="24">0</span>
+        <span class="stat-label">/ 7 Support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE CARDS -->
+  <section class="services">
+    <p class="section-label">What We Offer</p>
+    <h2 class="section-title">Popular Government Services</h2>
+
+    <div class="cards-grid">
+
+      <div class="card">
+        <span class="card-icon">📄</span>
+        <h3>Document Services</h3>
+        <p>Apply for Aadhaar, PAN Card, Passport, Birth & Death certificates — all online without long queues.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🏦</span>
+        <h3>Financial Assistance</h3>
+        <p>Track subsidies, pension disbursements, and welfare scheme applications with real-time status updates.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🏥</span>
+        <h3>Health & Insurance</h3>
+        <p>Access Ayushman Bharat, health cards, and insurance claim management through a secure portal.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🎓</span>
+        <h3>Education & Scholarships</h3>
+        <p>Apply for scholarships, verify degrees, and access educational resources for every citizen.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🏘️</span>
+        <h3>Land & Property</h3>
+        <p>Register property, check land records, pay taxes, and manage encumbrance certificates digitally.</p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🔒</span>
+        <h3>Secure & Verified</h3>
+        <p>End-to-end encrypted, Aadhaar-verified authentication ensuring your data stays private and protected.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+
+    /* ── Navigation logic (unchanged) ── */
+    function goToLogin()  { window.location.href = "login.html";  }
+    function goToSignup() { window.location.href = "signup.html"; }
+
+    /* ── Hamburger toggle ── */
+    const hamburger = document.getElementById('hamburger');
+    const navMenu   = document.getElementById('navMenu');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navMenu.classList.toggle('open');
+    });
+
+    /* Close menu on nav link click */
+    document.querySelectorAll('.nav-menu a, .nav-menu button').forEach(el => {
+      el.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navMenu.classList.remove('open');
+      });
+    });
+
+    /* ── Animated counter ── */
+    function animateCounter(el, target, suffix) {
+      const isFloat = target % 1 !== 0;
+      const duration = 1800;
+      const start = performance.now();
+
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const value = isFloat
+          ? (ease * target).toFixed(1)
+          : Math.floor(ease * target);
+        el.textContent = value + (suffix || '');
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseFloat(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          animateCounter(el, target, suffix);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number[data-target]').forEach(el => observer.observe(el));
+
+    /* ── Floating particles ── */
+    const container = document.getElementById('particles');
+    const COLORS = ['#3b82f6','#1a4b8c','#f59e0b','#60a5fa'];
+
+    for (let i = 0; i < 22; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = 4 + Math.random() * 10;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${COLORS[Math.floor(Math.random()*COLORS.length)]};
+        animation-duration:${10 + Math.random()*18}s;
+        animation-delay:${Math.random()*12}s;
+      `;
+      container.appendChild(p);
+    }
+
+    /* ── Card stagger on scroll ── */
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }, i * 80);
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.card').forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(32px)';
+      card.style.transition = 'opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1), box-shadow .3s';
+      cardObserver.observe(card);
+    });
+
+  </script>
+</body>
+</html>

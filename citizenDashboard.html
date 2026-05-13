@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Dashboard</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#dbeafe,#eff6ff);
+      min-height:100vh;
+    }
+
+    nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:20px 60px;
+      background:white;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo{
+      font-size:28px;
+      font-weight:bold;
+      color:#2563eb;
+    }
+
+    ul{
+      display:flex;
+      list-style:none;
+      gap:30px;
+    }
+
+    ul li a{
+      text-decoration:none;
+      color:#334155;
+      font-size:18px;
+    }
+
+    .right-section{
+      display:flex;
+      align-items:center;
+      gap:15px;
+    }
+
+    .user-info{
+      background:#eff6ff;
+      padding:10px 15px;
+      border-radius:8px;
+      color:#1e3a8a;
+      font-weight:bold;
+    }
+
+    .logout-btn{
+      padding:12px 20px;
+      border:none;
+      border-radius:8px;
+      background:#ef4444;
+      color:white;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .logout-btn:hover{
+      transform:translateY(-5px);
+      background:#dc2626;
+    }
+
+    .hero{
+      text-align:center;
+      padding:100px 20px;
+      animation:fadeIn 1.5s ease;
+    }
+
+    .hero h1{
+      font-size:55px;
+      color:#1e3a8a;
+      margin-bottom:20px;
+    }
+
+    .hero p{
+      max-width:700px;
+      margin:auto;
+      font-size:20px;
+      line-height:1.8;
+      color:#475569;
+    }
+
+    @keyframes fadeIn{
+      from{
+        opacity:0;
+        transform:translateY(40px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @media (max-width:768px){
+
+      nav{
+        flex-direction:column;
+        gap:20px;
+        padding:20px;
+      }
+
+      ul{
+        flex-direction:column;
+        text-align:center;
+      }
+
+      .right-section{
+        flex-direction:column;
+        width:100%;
+      }
+
+      .logout-btn{
+        width:100%;
+      }
+
+      .hero h1{
+        font-size:35px;
+      }
+
+      .hero p{
+        font-size:16px;
+      }
+
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <nav>
+
+    <div class="logo">Citizen Portal</div>
+    
+
+    <ul>
+      <li><a href="404ErrorPage.html">Home</a></li>
+      <li><a href="404ErrorPage.html">Services</a></li>
+      <li><a href="404ErrorPage.html">Applications</a></li>
+      <li><a href="404ErrorPage.html">Support</a></li>
+    </ul>
+
+    <div class="right-section">
+
+      <div class="user-info" id="userInfo"></div>
+
+      <button class="logout-btn" onclick="logout()">
+        Logout
+      </button>
+
+    </div>
+
+  </nav>
+
+  <section class="hero">
+
+    <h1>Welcome Citizen</h1>
+
+    <p>
+      Access government services, track applications,
+      raise complaints and manage all your citizen
+      activities securely from one place.
+    </p>
+
+  </section>
+
+  <script>
+
+    // Get stored email
+    let email = localStorage.getItem("userEmail");
+
+    // Show email
+    document.getElementById("userInfo").innerHTML = email;
+
+    function logout(){
+
+      // Clear storage
+      localStorage.removeItem("userEmail");
+
+      // Redirect
+      window.location.href = "index.html";
+
+    }
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 Error</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      background:linear-gradient(135deg,#dbeafe,#bfdbfe);
+      overflow:hidden;
+      padding:20px;
+    }
+
+    /* Error Container */
+
+    .error-container{
+      background:white;
+      padding:50px 40px;
+      border-radius:25px;
+      text-align:center;
+      box-shadow:0 15px 40px rgba(0,0,0,0.15);
+      max-width:600px;
+      width:100%;
+      animation:fadeIn 1.5s ease;
+      position:relative;
+    }
+
+    /* 404 Text */
+
+    .error-code{
+      font-size:120px;
+      font-weight:bold;
+      color:#2563eb;
+      line-height:1;
+      animation:bounce 2s infinite;
+    }
+
+    .error-title{
+      font-size:38px;
+      color:#1e3a8a;
+      margin-top:10px;
+      margin-bottom:20px;
+    }
+
+    .error-text{
+      font-size:18px;
+      color:#64748b;
+      line-height:1.7;
+      margin-bottom:35px;
+    }
+
+    /* Button */
+
+    .home-btn{
+      padding:14px 30px;
+      border:none;
+      border-radius:10px;
+      background:#2563eb;
+      color:white;
+      font-size:18px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .home-btn:hover{
+      transform:translateY(-5px) scale(1.05);
+      box-shadow:0 10px 25px rgba(37,99,235,0.4);
+      background:#1d4ed8;
+    }
+
+    /* Floating Circles */
+
+    .circle{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(37,99,235,0.1);
+      animation:float 5s infinite ease-in-out;
+    }
+
+    .circle1{
+      width:120px;
+      height:120px;
+      top:-40px;
+      left:-40px;
+    }
+
+    .circle2{
+      width:80px;
+      height:80px;
+      bottom:-20px;
+      right:-20px;
+    }
+
+    /* Animations */
+
+    @keyframes fadeIn{
+      from{
+        opacity:0;
+        transform:translateY(50px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @keyframes bounce{
+      0%,100%{
+        transform:translateY(0);
+      }
+      50%{
+        transform:translateY(-10px);
+      }
+    }
+
+    @keyframes float{
+      0%,100%{
+        transform:translateY(0px);
+      }
+      50%{
+        transform:translateY(-15px);
+      }
+    }
+
+    /* Tablet View */
+
+    @media (max-width:992px){
+
+      .error-code{
+        font-size:100px;
+      }
+
+      .error-title{
+        font-size:32px;
+      }
+
+    }
+
+    /* Mobile View */
+
+    @media (max-width:768px){
+
+      .error-container{
+        padding:40px 25px;
+      }
+
+      .error-code{
+        font-size:80px;
+      }
+
+      .error-title{
+        font-size:28px;
+      }
+
+      .error-text{
+        font-size:16px;
+      }
+
+      .home-btn{
+        width:100%;
+      }
+
+    }
+
+    /* Small Mobile */
+
+    @media (max-width:480px){
+
+      .error-code{
+        font-size:65px;
+      }
+
+      .error-title{
+        font-size:24px;
+      }
+
+      .error-text{
+        font-size:15px;
+      }
+
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="error-container">
+
+    <!-- Floating Shapes -->
+
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+    <!-- Error Content -->
+
+    <h1 class="error-code">404</h1>
+
+    <h2 class="error-title">
+      Page Not Found
+    </h2>
+
+    <p class="error-text">
+      Oops! The page you are looking for does not exist
+      or may have been moved. Please check the URL
+      or return to the home page.
+    </p>
+
+    <button class="home-btn" onclick="goHome()">
+      Back To Home
+    </button>
+
+  </div>
+
+  <script>
+
+    function goHome(){
+
+      window.location.href = "index.html";
+
+    }
+
+  </script>
+
+</body>
+</html>
