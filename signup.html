@@ -119,14 +119,55 @@
     .signup-container{
       position:relative;
       z-index:2;
-      width:min(450px,100%);
-      padding:45px;
+      width:min(900px,100%);
       border-radius:24px;
       background:var(--card-bg);
+      -webkit-backdrop-filter:blur(25px);
       backdrop-filter:blur(25px);
       border:1px solid var(--border);
       box-shadow:var(--shadow);
       animation:cardShow 1s ease;
+    }
+
+    .signup-card{
+      display:grid;
+      grid-template-columns:1.05fr 0.95fr;
+      gap:36px;
+      align-items:center;
+      padding:45px;
+    }
+
+    .signup-image-panel{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      align-items:flex-start;
+    }
+
+    .signup-image-panel img{
+      width:100%;
+      height:auto;
+      border-radius:24px;
+      object-fit:cover;
+      box-shadow:0 24px 70px rgba(15,23,42,0.25);
+    }
+
+    .visual-copy h3{
+      color:#eef2ff;
+      font-size:28px;
+      line-height:1.2;
+      margin:0;
+    }
+
+    .visual-copy p{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.8;
+      max-width:520px;
+    }
+
+    .signup-form-panel{
+      width:100%;
     }
 
     @keyframes cardShow{
@@ -266,7 +307,12 @@
     @media(max-width:992px){
 
       .signup-container{
-        width:70%;
+        width:90%;
+      }
+
+      .signup-card{
+        grid-template-columns:1fr;
+        padding:40px 32px;
       }
 
     }
@@ -275,13 +321,17 @@
 
     @media(max-width:768px){
 
-      .signup-container{
-        width:100%;
+      .signup-card{
         padding:35px 25px;
+        gap:26px;
       }
 
       .signup-header h2{
         font-size:28px;
+      }
+
+      .visual-copy h3{
+        font-size:24px;
       }
 
     }
@@ -290,12 +340,16 @@
 
     @media(max-width:480px){
 
-      .signup-container{
-        padding:30px 20px;
+      .signup-card{
+        padding:28px 20px;
       }
 
       .signup-header h2{
         font-size:24px;
+      }
+
+      .visual-copy h3{
+        font-size:20px;
       }
 
     }
@@ -327,87 +381,97 @@
   <!-- Signup Card -->
 
   <div class="signup-container">
+    <div class="signup-card">
+      <div class="signup-image-panel">
+        <img src="signup-image.svg" alt="GovServe signup illustration">
+        <div class="visual-copy">
+          <h3>Secure access to government services from one portal.</h3>
+          <p>Join the GovServe network to manage applications, review approvals, and stay connected with citizen support in a single, secure dashboard.</p>
+        </div>
+      </div>
 
-    <div class="signup-header">
-      <h2>Create Account</h2>
-      <p>Signup to access your dashboard</p>
+      <div class="signup-form-panel">
+        <div class="signup-header">
+          <h2>Create Account</h2>
+          <p>Signup to access your dashboard</p>
+        </div>
+
+        <form id="signupForm">
+
+          <!-- Name -->
+
+          <div class="field">
+            <label>Full Name</label>
+
+            <div class="input-box">
+              <input
+                type="text"
+                placeholder="Enter your name"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Email -->
+
+          <div class="field">
+            <label>Email Address</label>
+
+            <div class="input-box">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Password -->
+
+          <div class="field">
+            <label>Password</label>
+
+            <div class="input-box">
+              <input
+                type="password"
+                id="password"
+                placeholder="Min. 8 characters"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+
+          <div class="field">
+            <label>Confirm Password</label>
+
+            <div class="input-box">
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Re-Enter your password"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Button -->
+
+          <button type="submit" class="signup-btn">
+            Create Account
+          </button>
+
+        </form>
+
+        <!-- Login Text -->
+
+        <p class="login-text">
+          Already have an account?
+          <a href="login.html">Login</a>
+        </p>
+      </div>
     </div>
-
-    <form id="signupForm">
-
-      <!-- Name -->
-
-      <div class="field">
-        <label>Full Name</label>
-
-        <div class="input-box">
-          <input
-            type="text"
-            placeholder="Enter your name"
-            required
-          >
-        </div>
-      </div>
-
-      <!-- Email -->
-
-      <div class="field">
-        <label>Email Address</label>
-
-        <div class="input-box">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            required
-          >
-        </div>
-      </div>
-
-      <!-- Password -->
-
-      <div class="field">
-        <label>Password</label>
-
-        <div class="input-box">
-          <input
-            type="password"
-            id="password"
-            placeholder="Min. 8 characters"
-            required
-          >
-        </div>
-      </div>
-
-      <!-- Confirm Password -->
-
-      <div class="field">
-        <label>Confirm Password</label>
-
-        <div class="input-box">
-          <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Re-Enter your password"
-            required
-          >
-        </div>
-      </div>
-
-      <!-- Button -->
-
-      <button type="submit" class="signup-btn">
-        Create Account
-      </button>
-
-    </form>
-
-    <!-- Login Text -->
-
-    <p class="login-text">
-      Already have an account?
-      <a href="login.html">Login</a>
-    </p>
-
   </div>
 
   <script>

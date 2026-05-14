@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#22D3EE" />
+    </linearGradient>
+    <linearGradient id="shapeGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D8E2FF" />
+      <stop offset="100%" stop-color="#93C5FD" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="800" height="800" rx="80" fill="url(#bgGradient)" />
+  <circle cx="520" cy="200" r="120" fill="white" opacity="0.15" />
+  <circle cx="180" cy="160" r="60" fill="white" opacity="0.1" />
+  <rect x="120" y="320" width="560" height="300" rx="40" fill="white" opacity="0.12" />
+  <rect x="160" y="360" width="480" height="220" rx="28" fill="url(#shapeGradient)" />
+  <rect x="190" y="400" width="380" height="28" rx="14" fill="white" opacity="0.9" />
+  <rect x="190" y="448" width="320" height="20" rx="10" fill="white" opacity="0.8" />
+  <rect x="190" y="486" width="270" height="20" rx="10" fill="white" opacity="0.8" />
+  <circle cx="310" cy="480" r="20" fill="#22D3EE" />
+  <path d="M304 474L322 492" stroke="white" stroke-width="8" stroke-linecap="round" />
+  <path d="M322 474L304 492" stroke="white" stroke-width="8" stroke-linecap="round" />
+  <rect x="230" y="220" width="280" height="260" rx="40" fill="white" opacity="0.12" />
+  <rect x="240" y="240" width="260" height="220" rx="30" fill="white" />
+  <circle cx="360" cy="330" r="28" fill="#2563EB" />
+  <path d="M354 326L368 340" stroke="white" stroke-width="8" stroke-linecap="round" />
+  <path d="M368 326L354 340" stroke="white" stroke-width="8" stroke-linecap="round" />
+  <path d="M325 430C325 401 355 389 400 389C445 389 475 401 475 430C475 460 445 478 400 478C355 478 325 460 325 430Z" fill="#1D4ED8" opacity="0.2" />
+  <path d="M380 410C380 392 395 381 415 381C435 381 450 392 450 410C450 429 435 440 415 440C395 440 380 429 380 410Z" fill="#60A5FA" />
+  <path d="M380 440L435 495" stroke="white" stroke-width="16" stroke-linecap="round" />
+  <path d="M435 495L500 430" stroke="white" stroke-width="16" stroke-linecap="round" />
+  <rect x="180" y="680" width="440" height="60" rx="30" fill="white" opacity="0.15" />
+  <text x="200" y="120" fill="white" font-family="Sora, sans-serif" font-size="48" font-weight="700">GovServe</text>
+</svg>
