@@ -67,7 +67,7 @@
     }
 
     /* ══════════════════════════════
-       NAVBAR
+       NAVBAR (desktop)
     ══════════════════════════════ */
     nav {
       position: sticky; top:0; z-index:200;
@@ -92,7 +92,6 @@
       letter-spacing:-.02em;
       text-decoration:none;
       display:flex; align-items:center; gap:9px;
-      margin-right:auto;
     }
 
     .logo-mark {
@@ -105,11 +104,13 @@
 
     .logo span { color:var(--mint); }
 
-    nav ul {
+    /* Desktop nav links */
+    .desktop-nav-links {
       display:flex; list-style:none; gap:4px;
+      margin-right:auto;
     }
 
-    nav ul li a {
+    .desktop-nav-links li a {
       text-decoration:none;
       color:rgba(255,255,255,.60);
       font-size:14px; font-weight:500;
@@ -118,12 +119,13 @@
       white-space:nowrap;
     }
 
-    nav ul li a:hover {
+    .desktop-nav-links li a:hover {
       color:var(--white);
       background:rgba(255,255,255,.08);
     }
 
-    .right-section {
+    /* Desktop right section */
+    .desktop-right {
       display:flex; align-items:center; gap:12px;
     }
 
@@ -157,6 +159,129 @@
       background:rgba(239,68,68,.22);
       border-color:rgba(239,68,68,.6);
       transform:translateY(-2px);
+      color:#fff;
+    }
+
+    /* Hamburger button — hidden on desktop */
+    .hamburger {
+      display:none;
+      border:none;
+      background:rgba(255,255,255,.08);
+      color:var(--white);
+      width:42px; height:42px;
+      border-radius:10px;
+      font-size:22px;
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      transition:background .2s;
+      flex-shrink:0;
+      margin-left:auto;
+    }
+
+    .hamburger:hover { background:rgba(255,255,255,.14); }
+
+    /* ══════════════════════════════
+       FULLSCREEN MOBILE OVERLAY
+    ══════════════════════════════ */
+    .nav-overlay {
+      display:none;
+      position:fixed; inset:0; z-index:500;
+      background:rgba(10,31,61,.98);
+      flex-direction:column;
+      padding:20px;
+      overflow-y:auto;
+    }
+
+    .nav-overlay.open { display:flex; }
+
+    .overlay-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:28px;
+      flex-shrink:0;
+    }
+
+    .close-btn {
+      border:none;
+      background:rgba(255,255,255,.08);
+      color:var(--white);
+      width:42px; height:42px;
+      border-radius:10px;
+      font-size:22px;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s;
+      flex-shrink:0;
+    }
+
+    .close-btn:hover { background:rgba(255,255,255,.14); }
+
+    .overlay-nav-links {
+      list-style:none;
+      display:flex; flex-direction:column; gap:8px;
+      width:100%;
+    }
+
+    .overlay-nav-links li a {
+      display:flex; align-items:center; gap:12px;
+      padding:16px 18px;
+      border-radius:12px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.07);
+      color:rgba(255,255,255,.85);
+      text-decoration:none;
+      font-family:var(--font-b); font-size:15px; font-weight:500;
+      transition:background .2s, color .2s, border-color .2s;
+    }
+
+    .overlay-nav-links li a:hover,
+    .overlay-nav-links li a:active {
+      background:rgba(56,189,248,.12);
+      color:var(--mint);
+      border-color:rgba(56,189,248,.25);
+    }
+
+    .overlay-nav-links li a .link-icon {
+      font-size:18px; width:24px; text-align:center; flex-shrink:0;
+    }
+
+    .overlay-divider {
+      height:1px;
+      background:rgba(255,255,255,.08);
+      margin:20px 0;
+      flex-shrink:0;
+    }
+
+    .overlay-user-info {
+      display:flex; align-items:center; gap:10px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      padding:14px 16px;
+      border-radius:10px;
+      font-size:13px; font-weight:500;
+      color:rgba(255,255,255,.75);
+      margin-bottom:10px;
+      flex-shrink:0;
+    }
+
+    .overlay-user-info::before {
+      content:'👤'; font-size:16px; flex-shrink:0;
+    }
+
+    .overlay-logout-btn {
+      width:100%; padding:14px;
+      border:1px solid rgba(239,68,68,.35);
+      border-radius:10px;
+      background:rgba(239,68,68,.10);
+      color:#fca5a5;
+      font-family:var(--font-b); font-size:14px; font-weight:600;
+      cursor:pointer; transition:all .2s;
+      flex-shrink:0;
+    }
+
+    .overlay-logout-btn:hover {
+      background:rgba(239,68,68,.22);
+      border-color:rgba(239,68,68,.6);
       color:#fff;
     }
 
@@ -201,9 +326,7 @@
       margin-bottom:14px;
     }
 
-    .hero h1 .name-highlight {
-      color:var(--mint);
-    }
+    .hero h1 .name-highlight { color:var(--mint); }
 
     .hero p {
       font-size:15px; color:rgba(255,255,255,.60);
@@ -241,9 +364,7 @@
     }
 
     /* mini stats in hero */
-    .hero-stats {
-      display:flex; gap:28px; flex-wrap:wrap;
-    }
+    .hero-stats { display:flex; gap:28px; flex-wrap:wrap; }
 
     .h-stat {
       text-align:center;
@@ -358,9 +479,7 @@
     }
 
     /* service grid */
-    .svc-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:10px;
-    }
+    .svc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
     .svc-btn {
       display:flex; flex-direction:column; align-items:flex-start; gap:6px;
@@ -404,13 +523,14 @@
     .app-dot.review   { background:var(--sky);   box-shadow:0 0 8px var(--sky); }
     .app-dot.rejected { background:var(--red);   box-shadow:0 0 8px var(--red); }
 
-    .app-info { flex:1; }
+    .app-info { flex:1; min-width:0; }
     .app-info strong { display:block; font-size:13px; font-weight:600; margin-bottom:2px; }
     .app-info span   { font-size:11px; color:rgba(255,255,255,.40); }
 
     .app-badge {
       font-size:11px; font-weight:700; padding:4px 10px;
       border-radius:20px; letter-spacing:.04em; white-space:nowrap;
+      flex-shrink:0;
     }
 
     .app-badge.approved { background:rgba(52,211,153,.15); color:var(--mint); }
@@ -503,56 +623,44 @@
     footer a { color:var(--mint); text-decoration:none; }
     footer a:hover { text-decoration:underline; }
 
+    /* Scroll reveal helper */
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
+    .reveal.visible { opacity:1; transform:none; }
+
     /* ══════════════════════════════
        RESPONSIVE
     ══════════════════════════════ */
 
-    /* Tablet */
-    @media (max-width:992px) {
-      nav  { padding:0 24px; }
-      nav ul { display:none; }
-      .hero { padding:52px 24px 40px; }
-      .main { padding:32px 24px 60px; }
-      footer { padding:20px 24px; }
+    /* Tablet & below — show hamburger, hide desktop nav */
+    @media (max-width:900px) {
+      nav {
+        padding:0 20px;
+        height:62px;
+        gap:0;
+      }
+
+      .logo { margin-right:auto; }
+
+      .desktop-nav-links { display:none; }
+      .desktop-right { display:none; }
+      .hamburger { display:flex; }
+
+      .hero { padding:44px 20px 36px; }
+      .main { padding:28px 20px 60px; }
+      footer { padding:20px 20px; }
     }
 
-    /* Large mobile / small tablet */
     @media (max-width:768px) {
-      nav {
-        flex-wrap:wrap;
-        height:auto;
-        padding:14px 18px;
-        gap:12px;
-      }
-
-      .logo { font-size:18px; }
-
-      .right-section {
-        flex-wrap:wrap;
-        width:100%;
-        gap:8px;
-      }
-
-      .user-info {
-        flex:1; max-width:100%;
-        justify-content:center; text-align:center;
-      }
-
-      .logout-btn { width:100%; text-align:center; }
-
       .hero-inner { flex-direction:column; }
       .hero-stats  { justify-content:center; }
 
       .two-col { grid-template-columns:1fr; }
-
-      .svc-grid { grid-template-columns:1fr 1fr; }
 
       .stats-row { grid-template-columns:1fr 1fr; }
 
       footer { flex-direction:column; text-align:center; }
     }
 
-    /* Mobile */
     @media (max-width:480px) {
       .hero h1 { font-size:26px; }
 
@@ -560,39 +668,83 @@
 
       .qa-grid { grid-template-columns:1fr 1fr; }
 
-      .svc-grid { grid-template-columns:1fr; }
+      .svc-grid { grid-template-columns:1fr 1fr; }
 
       .h-stat { min-width:80px; padding:14px 14px; }
       .h-stat strong { font-size:22px; }
-    }
 
-    /* Scroll reveal helper */
-    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
-    .reveal.visible { opacity:1; transform:none; }
+      .app-info strong { font-size:12px; }
+    }
 
   </style>
 </head>
 <body>
 
-  <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+  <!-- ═══════════════════ NAVBAR (desktop) ═══════════════════ -->
   <nav>
     <a class="logo" href="index.html">
       <div class="logo-mark">GS</div>
       Citizen <span>Portal</span>
     </a>
 
-    <ul>
+    <!-- Desktop nav links -->
+    <ul class="desktop-nav-links">
       <li><a href="404ErrorPage.html">Home</a></li>
       <li><a href="404ErrorPage.html">Services</a></li>
       <li><a href="404ErrorPage.html">Applications</a></li>
       <li><a href="404ErrorPage.html">Support</a></li>
     </ul>
 
-    <div class="right-section">
-      <div class="user-info" id="userInfo"></div>
+    <!-- Desktop right section -->
+    <div class="desktop-right">
+      <div class="user-info" id="userInfoDesktop"></div>
       <button class="logout-btn" onclick="logout()">⎋ Logout</button>
     </div>
+
+    <!-- Hamburger — visible only on mobile -->
+    <button class="hamburger" aria-label="Open navigation menu" onclick="openNav()">☰</button>
   </nav>
+
+  <!-- ═══════════════════ FULLSCREEN MOBILE OVERLAY ═══════════════════ -->
+  <div class="nav-overlay" id="navOverlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+
+    <div class="overlay-header">
+      <a class="logo" href="index.html" onclick="closeNav()">
+        <div class="logo-mark">GS</div>
+        Citizen <span>Portal</span>
+      </a>
+      <button class="close-btn" aria-label="Close navigation menu" onclick="closeNav()">✕</button>
+    </div>
+
+    <ul class="overlay-nav-links">
+      <li>
+        <a href="404ErrorPage.html" onclick="closeNav()">
+          <span class="link-icon">🏠</span> Home
+        </a>
+      </li>
+      <li>
+        <a href="404ErrorPage.html" onclick="closeNav()">
+          <span class="link-icon">⚙️</span> Services
+        </a>
+      </li>
+      <li>
+        <a href="404ErrorPage.html" onclick="closeNav()">
+          <span class="link-icon">📋</span> Applications
+        </a>
+      </li>
+      <li>
+        <a href="404ErrorPage.html" onclick="closeNav()">
+          <span class="link-icon">💬</span> Support
+        </a>
+      </li>
+    </ul>
+
+    <div class="overlay-divider"></div>
+
+    <div class="overlay-user-info" id="userInfoMobile"></div>
+    <button class="overlay-logout-btn" onclick="logout()">⎋ Logout</button>
+
+  </div>
 
   <!-- ═══════════════════ HERO ═══════════════════ -->
   <section class="hero">
@@ -842,21 +994,42 @@
 
   <script>
 
-    /* ── Original logic preserved ── */
-    let email = localStorage.getItem("userEmail");
+    /* ── User info ── */
+    const email = localStorage.getItem("userEmail") || "citizen@gov.in";
 
-    // Show email in navbar
-    document.getElementById("userInfo").innerHTML = email || "citizen@gov.in";
+    document.getElementById("userInfoDesktop").textContent = email;
+    document.getElementById("userInfoMobile").textContent  = email;
 
-    // Show name in hero (first part of email before @)
-    const name = email ? email.split("@")[0] : "Citizen";
+    const name = email.split("@")[0];
     document.getElementById("heroName").textContent =
       name.charAt(0).toUpperCase() + name.slice(1);
 
+    /* ── Auth ── */
     function logout() {
       localStorage.removeItem("userEmail");
       window.location.href = "index.html";
     }
+
+    /* ── Mobile overlay ── */
+    function openNav() {
+      document.getElementById("navOverlay").classList.add("open");
+      document.body.style.overflow = "hidden";   // prevent background scroll
+    }
+
+    function closeNav() {
+      document.getElementById("navOverlay").classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    // Close overlay on Escape key
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") closeNav();
+    });
+
+    // Close overlay when clicking the dark backdrop (outside menu content)
+    document.getElementById("navOverlay").addEventListener("click", function(e) {
+      if (e.target === this) closeNav();
+    });
 
     /* ── Scroll reveal ── */
     const observer = new IntersectionObserver((entries) => {
