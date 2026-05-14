@@ -1,0 +1,13 @@
+<svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background -->
+  <rect width="200" height="50" fill="none"/>
+  
+  <!-- Gov text -->
+  <text x="10" y="35" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#ffffff">Gov</text>
+  
+  <!-- Serve text with accent -->
+  <text x="85" y="35" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#22d3ee">Serve</text>
+  
+  <!-- Underline accent -->
+  <rect x="10" y="40" width="130" height="3" fill="#22d3ee" rx="1.5"/>
+</svg>

@@ -3,1035 +3,1097 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Officer Dashboard</title>
-
+  <title>Officer Portal — GovServe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, sans-serif;
+    :root {
+      --navy:     #07111f;
+      --navy2:    #0d1e36;
+      --navy3:    #112240;
+      --sidebar:  #090f1c;
+      --saffron:  #FF9933;
+      --saff2:    #e07010;
+      --green:    #138808;
+      --green2:   #0d6606;
+      --sky:      #38bdf8;
+      --red:      #ef4444;
+      --white:    #f8fafc;
+      --muted:    #64748b;
+      --border:   rgba(255,255,255,0.07);
+      --card:     rgba(17,34,64,0.85);
+      --font-h:   'Rajdhani', sans-serif;
+      --font-b:   'Noto Sans', sans-serif;
+      --ease:     cubic-bezier(.22,.68,0,1.2);
     }
 
-    body{
-      background:linear-gradient(135deg,#0a1f3d,#1a4d7a);
-      min-height:100vh;
-      overflow-x:hidden;
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { overflow-x:hidden; background:var(--navy); color:var(--white); font-family:var(--font-b); }
+
+    /* ── decorative bg ── */
+    .bg-deco {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 70% 55% at 5% 15%,  rgba(255,153,51,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 95% 85%,  rgba(19,136,8,.08)  0%, transparent 60%),
+        radial-gradient(ellipse 40% 35% at 50% 50%,  rgba(56,189,248,.04) 0%, transparent 60%);
+    }
+    .bg-grid {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size:58px 58px;
     }
 
-    /* ══════════════════════════════
-       NAVBAR (desktop)
-    ══════════════════════════════ */
+    /* ═══════════════════════
+       LAYOUT
+    ═══════════════════════ */
+    .layout { display:flex; min-height:100vh; position:relative; z-index:1; }
 
-    nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:20px 60px;
-      background:#0d2e52;
-      box-shadow:0 2px 10px rgba(0,0,0,0.3);
-      animation:slideDown 1s ease;
-      position:sticky;
-      top:0;
-      z-index:100;
+    /* ═══════════════════════
+       SIDEBAR
+    ═══════════════════════ */
+    .sidebar {
+      width:252px; flex-shrink:0;
+      background:var(--sidebar);
+      border-right:1px solid var(--border);
+      display:flex; flex-direction:column;
+      position:sticky; top:0; height:100vh;
+      overflow-y:auto; overflow-x:hidden;
+      transition:left .3s cubic-bezier(.4,0,.2,1);
     }
 
-    .logo{
-      font-size:28px;
-      font-weight:bold;
-      color:#38bdf8;
+    /* Sidebar header */
+    .sb-header {
+      padding:22px 18px 16px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(135deg, rgba(255,153,51,.07), rgba(19,136,8,.04));
       flex-shrink:0;
     }
-
-    /* Desktop nav links */
-    .desktop-nav-links{
-      display:flex;
-      list-style:none;
-      gap:30px;
-    }
-
-    .desktop-nav-links li a{
-      text-decoration:none;
-      color:#cbd5e1;
-      font-size:18px;
-      transition:0.3s;
-    }
-
-    .desktop-nav-links li a:hover{
-      color:#38bdf8;
-    }
-
-    /* Desktop right section */
-    .desktop-right{
-      display:flex;
-      align-items:center;
-      gap:15px;
-    }
-
-    .user-info{
-      background:rgba(56,189,248,0.15);
-      padding:10px 15px;
-      border-radius:8px;
-      color:#38bdf8;
-      font-weight:bold;
-    }
-
-    .logout-btn{
-      padding:12px 22px;
-      border:none;
-      border-radius:8px;
-      background:#ef4444;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
-      transition:0.3s;
-    }
-
-    .logout-btn:hover{
-      transform:translateY(-5px);
-      box-shadow:0 8px 20px rgba(239,68,68,0.4);
-      background:#dc2626;
-    }
-
-    /* Hamburger — hidden on desktop */
-    .hamburger{
-      display:none;
-      border:none;
-      background:rgba(56,189,248,0.15);
-      color:#38bdf8;
-      width:44px;
-      height:44px;
-      border-radius:10px;
-      font-size:24px;
-      cursor:pointer;
-      align-items:center;
-      justify-content:center;
-      transition:background 0.2s;
-      flex-shrink:0;
-    }
-
-    .hamburger:hover{
-      background:rgba(56,189,248,0.28);
-    }
-
-    /* ══════════════════════════════
-       FULLSCREEN MOBILE OVERLAY
-    ══════════════════════════════ */
-
-    .nav-overlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:500;
-      background:rgba(10,31,61,0.98);
-      flex-direction:column;
-      padding:24px 20px;
-      overflow-y:auto;
-    }
-
-    .nav-overlay.open{
-      display:flex;
-    }
-
-    .overlay-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:32px;
-      flex-shrink:0;
-    }
-
-    .close-btn{
-      border:none;
-      background:rgba(56,189,248,0.15);
-      color:#38bdf8;
-      width:44px;
-      height:44px;
-      border-radius:10px;
-      font-size:24px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition:background 0.2s;
-      flex-shrink:0;
-    }
-
-    .close-btn:hover{
-      background:rgba(56,189,248,0.28);
-    }
-
-    .overlay-nav-links{
-      list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      width:100%;
-    }
-
-    .overlay-nav-links li a{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      padding:16px 20px;
-      border-radius:12px;
-      background:rgba(56,189,248,0.07);
-      border:1px solid rgba(56,189,248,0.15);
-      color:#cbd5e1;
-      text-decoration:none;
-      font-size:16px;
-      font-weight:600;
-      transition:background 0.2s, color 0.2s, border-color 0.2s;
-    }
-
-    .overlay-nav-links li a:hover,
-    .overlay-nav-links li a:active{
-      background:rgba(56,189,248,0.18);
-      color:#38bdf8;
-      border-color:rgba(56,189,248,0.4);
-    }
-
-    .overlay-nav-links li a .link-icon{
+    .sb-logo { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .sb-emblem {
+      width:42px; height:42px; border-radius:12px; flex-shrink:0;
+      background:linear-gradient(135deg, var(--saffron), var(--saff2));
+      display:flex; align-items:center; justify-content:center;
       font-size:20px;
-      width:28px;
-      text-align:center;
-      flex-shrink:0;
+      box-shadow:0 4px 18px rgba(255,153,51,.45);
+      animation:pulseLogo 3s ease-in-out infinite;
+    }
+    @keyframes pulseLogo {
+      0%,100%{ box-shadow:0 4px 18px rgba(255,153,51,.4); }
+      50%    { box-shadow:0 4px 32px rgba(255,153,51,.75); }
+    }
+    .sb-title h2 { font-family:var(--font-h); font-size:17px; font-weight:700; line-height:1.2; }
+    .sb-title .sb-sub { font-size:10.5px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; margin-top:2px; }
+
+    /* Officer chip */
+    .officer-chip {
+      display:flex; align-items:center; gap:10px;
+      background:rgba(255,153,51,.08);
+      border:1px solid rgba(255,153,51,.18);
+      border-radius:10px; padding:10px 12px;
+      margin-top:12px;
+    }
+    .officer-avatar {
+      width:34px; height:34px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#FF9933,#138808);
+      display:flex; align-items:center; justify-content:center;
+      font-size:15px; font-weight:700; color:var(--navy);
+    }
+    .officer-info { min-width:0; }
+    .officer-info strong { display:block; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .officer-info span   { font-size:10.5px; color:var(--muted); }
+
+    /* Nav links */
+    .sb-nav { padding:12px 8px; flex:1; }
+    .nav-lbl {
+      font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--muted); padding:8px 12px 4px; margin-top:6px;
+    }
+    .sb-nav button {
+      width:100%; padding:12px 14px; margin-bottom:2px;
+      border:none; background:transparent; color:rgba(248,250,252,.65);
+      border-radius:10px; cursor:pointer;
+      font-size:13.5px; font-family:var(--font-b); font-weight:500;
+      transition:background .18s, color .18s, transform .18s;
+      text-align:left; display:flex; align-items:center; gap:12px;
+    }
+    .sb-nav button .ni { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+    .sb-nav button:hover  { background:rgba(255,153,51,.10); color:#fff; transform:translateX(3px); }
+    .sb-nav button.active {
+      background:linear-gradient(135deg,rgba(255,153,51,.2),rgba(255,153,51,.07));
+      color:var(--saffron); border-left:3px solid var(--saffron);
     }
 
-    .overlay-divider{
-      height:1px;
-      background:rgba(56,189,248,0.15);
-      margin:22px 0;
-      flex-shrink:0;
+    .sb-footer {
+      padding:14px 18px; border-top:1px solid var(--border);
+      font-size:10.5px; color:var(--muted); text-align:center; flex-shrink:0;
     }
 
-    .overlay-user-info{
-      background:rgba(56,189,248,0.12);
-      border:1px solid rgba(56,189,248,0.25);
-      padding:14px 18px;
-      border-radius:10px;
-      color:#38bdf8;
-      font-weight:bold;
-      font-size:14px;
-      margin-bottom:12px;
-      flex-shrink:0;
+    /* ═══════════════════════
+       OVERLAY (mobile)
+    ═══════════════════════ */
+    .overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.65); z-index:998;
+    }
+    .overlay.open { display:block; }
+
+    /* ═══════════════════════
+       MAIN
+    ═══════════════════════ */
+    .main { flex:1; min-width:0; padding:16px; overflow-x:hidden; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--navy3); border:1px solid var(--border);
+      border-radius:14px; padding:12px 18px; margin-bottom:18px;
+      box-shadow:0 6px 24px rgba(0,0,0,.3); gap:10px;
+      animation:slideDown .55s var(--ease) both;
+    }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
+
+    .topbar-l { display:flex; align-items:center; gap:12px; }
+    .topbar-r { display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
+
+    .hamburger {
+      display:none; width:38px; height:38px;
+      border:1px solid rgba(255,153,51,.3); background:rgba(255,153,51,.1);
+      border-radius:9px; cursor:pointer; font-size:20px; color:#fff;
+      align-items:center; justify-content:center; flex-shrink:0;
+      transition:background .2s;
+    }
+    .hamburger:hover { background:rgba(255,153,51,.22); }
+
+    .page-title { font-family:var(--font-h); font-size:20px; font-weight:700; letter-spacing:.02em; }
+    .page-sub   { font-size:11.5px; color:var(--muted); }
+
+    .online-badge {
+      display:flex; align-items:center; gap:6px;
+      background:rgba(19,136,8,.12); border:1px solid rgba(19,136,8,.28);
+      border-radius:999px; padding:5px 12px; font-size:12.5px; font-weight:500;
+    }
+    .dot { width:7px; height:7px; background:var(--green); border-radius:50%; animation:blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    #userEmail {
+      background:rgba(255,255,255,.06); border:1px solid var(--border);
+      border-radius:999px; padding:6px 12px; font-size:12.5px;
+      max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .logout-btn {
+      padding:7px 14px; border:1px solid rgba(239,68,68,.38);
+      background:rgba(239,68,68,.1); color:#f87171;
+      border-radius:8px; cursor:pointer; font-size:12.5px;
+      font-family:var(--font-b); white-space:nowrap; transition:background .2s;
+    }
+    .logout-btn:hover { background:rgba(239,68,68,.22); }
+
+    /* ── CONTENT ── */
+    #content { animation:fadeUp .35s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+    /* ── TICKER ── */
+    .ticker {
+      display:flex; align-items:center; gap:10px; overflow:hidden;
+      background:linear-gradient(90deg,rgba(255,153,51,.09),rgba(19,136,8,.05));
+      border:1px solid rgba(255,153,51,.15); border-radius:10px;
+      padding:9px 16px; margin-bottom:18px;
+    }
+    .ticker-tag {
+      font-family:var(--font-h); font-size:10.5px; font-weight:700;
+      letter-spacing:.1em; text-transform:uppercase;
+      background:var(--saffron); color:var(--navy);
+      padding:3px 8px; border-radius:5px; flex-shrink:0;
+    }
+    .ticker-wrap { overflow:hidden; flex:1; }
+    .ticker-belt {
+      display:flex; gap:60px; white-space:nowrap;
+      animation:tickerRoll 32s linear infinite;
+    }
+    .ticker-belt span { font-size:12.5px; color:rgba(248,250,252,.78); }
+    .ticker-belt span::before { content:'📌 '; }
+    @keyframes tickerRoll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* ── STAT CARDS ── */
+    .cards {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+      gap:14px; margin-bottom:18px;
+    }
+    .card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:20px 18px;
+      transition:transform .25s, box-shadow .25s;
+      position:relative; overflow:hidden;
+      animation:slideUp .45s var(--ease) both;
+    }
+    .card:nth-child(1){animation-delay:.04s} .card:nth-child(2){animation-delay:.09s}
+    .card:nth-child(3){animation-delay:.14s} .card:nth-child(4){animation-delay:.19s}
+    @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+    .card::before {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:3px; border-radius:14px 14px 0 0;
+    }
+    .card.c1::before{background:linear-gradient(90deg,#FF9933,#ffcc00)}
+    .card.c2::before{background:linear-gradient(90deg,#138808,#00c853)}
+    .card.c3::before{background:linear-gradient(90deg,#3b82f6,#06b6d4)}
+    .card.c4::before{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
+    .card:hover { transform:translateY(-5px); box-shadow:0 18px 44px rgba(0,0,0,.35); }
+    .card-ico { font-size:24px; margin-bottom:10px; }
+    .card h3  { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+    .card p   { font-family:var(--font-h); font-size:30px; font-weight:700; line-height:1; }
+    .card-chg { font-size:11.5px; margin-top:5px; }
+    .up   { color:#4ade80; }
+    .down { color:#f87171; }
+
+    /* ── CHART BOX ── */
+    .chart-box {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:20px; margin-bottom:18px;
+    }
+    .chart-box h3 {
+      font-family:var(--font-h); font-size:16px; font-weight:700;
+      color:var(--saffron); margin-bottom:14px; letter-spacing:.02em;
     }
 
-    .overlay-user-info::before{
-      content:'👤  ';
+    /* ── TWO-COL INFO ROW ── */
+    .info-row {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:14px; margin-top:18px;
+    }
+    .info-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:20px;
+    }
+    .info-card h4 {
+      font-family:var(--font-h); font-size:15px; color:var(--saffron);
+      margin-bottom:12px; letter-spacing:.03em;
+    }
+    .info-item {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:7px 0; border-bottom:1px solid rgba(255,255,255,.04);
+      font-size:13px; color:rgba(248,250,252,.75);
+    }
+    .info-item:last-child { border-bottom:none; }
+    .info-item strong { color:#fff; }
+
+    /* ── PROGRESS ── */
+    .prog-item { margin-bottom:14px; }
+    .prog-lbl  { display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:5px; color:rgba(248,250,252,.8); }
+    .prog-bar  { height:6px; background:rgba(255,255,255,.06); border-radius:999px; overflow:hidden; }
+    .prog-fill { height:100%; border-radius:999px; width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+
+    /* ── SECTION BOX ── */
+    .section-box {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:24px; animation:fadeUp .35s ease;
+    }
+    .section-box h2 { font-family:var(--font-h); font-size:24px; font-weight:700; margin-bottom:4px; }
+    .sub { font-size:12.5px; color:var(--muted); margin-bottom:18px; }
+    .section-box > p { font-size:13.5px; color:rgba(248,250,252,.8); line-height:1.75; margin-bottom:12px; }
+
+    /* ── TABLE ── */
+    .tbl-wrap {
+      overflow-x:auto; -webkit-overflow-scrolling:touch;
+      border-radius:12px; border:1px solid var(--border); margin-top:16px;
+    }
+    table { width:100%; border-collapse:collapse; min-width:480px; }
+    th,td { padding:12px 14px; text-align:left; font-size:12.5px; }
+    th {
+      background:rgba(255,153,51,.09); color:var(--saffron);
+      font-family:var(--font-h); font-size:10.5px;
+      letter-spacing:.09em; text-transform:uppercase; font-weight:700;
+    }
+    td { color:rgba(248,250,252,.78); border-bottom:1px solid rgba(255,255,255,.04); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(255,153,51,.04); }
+
+    .badge {
+      display:inline-block; padding:3px 10px; border-radius:999px;
+      font-size:11.5px; font-weight:600;
+    }
+    .badge.active  { background:rgba(19,136,8,.18);   color:#4ade80; border:1px solid rgba(19,136,8,.3); }
+    .badge.pending { background:rgba(255,153,51,.13);  color:var(--saffron); border:1px solid rgba(255,153,51,.3); }
+    .badge.closed  { background:rgba(148,163,184,.08); color:var(--muted); border:1px solid var(--border); }
+    .badge.review  { background:rgba(56,189,248,.12);  color:var(--sky); border:1px solid rgba(56,189,248,.3); }
+
+    /* ── SERVICE TILES ── */
+    .svc-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr));
+      gap:10px; margin-bottom:20px;
+    }
+    .svc-tile {
+      background:#0d1e36; border:1px solid var(--border); border-radius:12px;
+      padding:16px 8px; text-align:center; cursor:pointer;
+      transition:all .22s; animation:slideUp .45s var(--ease) both;
+    }
+    .svc-tile:nth-child(1){animation-delay:.05s} .svc-tile:nth-child(2){animation-delay:.09s}
+    .svc-tile:nth-child(3){animation-delay:.13s} .svc-tile:nth-child(4){animation-delay:.17s}
+    .svc-tile:nth-child(5){animation-delay:.21s} .svc-tile:nth-child(6){animation-delay:.25s}
+    .svc-tile:hover { background:rgba(255,153,51,.09); border-color:rgba(255,153,51,.3); transform:translateY(-3px) scale(1.02); }
+    .svc-tile .ico  { font-size:24px; display:block; margin-bottom:6px; }
+    .svc-tile span  { font-size:11.5px; color:rgba(248,250,252,.75); font-weight:500; line-height:1.3; }
+
+    /* ── TIMELINE ── */
+    .tl-item { display:flex; gap:14px; margin-bottom:16px; animation:fadeUp .4s ease both; }
+    .tl-side  { display:flex; flex-direction:column; align-items:center; }
+    .tl-dot   { width:11px; height:11px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+    .tl-line  { width:2px; flex:1; background:var(--border); margin-top:4px; min-height:20px; }
+    .tl-body  { padding-bottom:6px; }
+    .tl-body h5 { font-size:13.5px; font-weight:600; margin-bottom:2px; }
+    .tl-body p  { font-size:12px; color:var(--muted); }
+
+    /* ── SETTINGS ── */
+    .set-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:18px; }
+    .frm-grp  { margin-bottom:13px; }
+    .frm-grp label { display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:6px; }
+    .frm-grp input,
+    .frm-grp select {
+      width:100%; background:rgba(255,255,255,.05); border:1px solid var(--border);
+      border-radius:8px; padding:9px 12px; color:#fff;
+      font-size:13px; font-family:var(--font-b); outline:none; transition:border-color .2s;
+    }
+    .frm-grp input:focus, .frm-grp select:focus { border-color:rgba(255,153,51,.5); }
+    .frm-grp select option { background:#112240; }
+    .tog-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 0; border-bottom:1px solid rgba(255,255,255,.05);
+      font-size:13px; color:rgba(248,250,252,.8);
+    }
+    .tog-row:last-of-type { border-bottom:none; }
+    .tog { width:42px; height:22px; background:rgba(255,255,255,.1); border-radius:999px; cursor:pointer; position:relative; transition:background .2s; flex-shrink:0; }
+    .tog.on { background:var(--green); }
+    .tog::after { content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%; transition:left .2s; }
+    .tog.on::after { left:23px; }
+    .save-btn {
+      margin-top:18px; padding:11px 26px;
+      background:linear-gradient(135deg,var(--saffron),var(--saff2));
+      border:none; border-radius:10px; color:var(--navy);
+      font-weight:700; font-size:13.5px; font-family:var(--font-b);
+      cursor:pointer; transition:all .2s; box-shadow:0 4px 18px rgba(255,153,51,.3);
+    }
+    .save-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(255,153,51,.4); }
+
+    /* ── ALERT CARDS (quick actions) ── */
+    .qa-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:12px; margin-bottom:18px;
+    }
+    .qa-card {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      padding:18px 12px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; cursor:pointer; text-align:center;
+      transition:all .22s; animation:slideUp .45s var(--ease) both;
+    }
+    .qa-card:hover {
+      background:rgba(255,153,51,.08);
+      border-color:rgba(255,153,51,.3);
+      transform:translateY(-4px);
+      box-shadow:0 14px 36px rgba(0,0,0,.28);
+    }
+    .qa-card .qa-icon { font-size:26px; transition:transform .22s var(--ease); }
+    .qa-card:hover .qa-icon { transform:scale(1.18); }
+    .qa-card h4 { font-family:var(--font-h); font-size:13px; font-weight:700; }
+    .qa-card p  { font-size:11px; color:var(--muted); line-height:1.4; }
+
+
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .overlay-logout-btn{
-      width:100%;
-      padding:15px;
-      border:none;
-      border-radius:10px;
-      background:#ef4444;
-      color:white;
-      font-size:15px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
-      flex-shrink:0;
+    .logo-img {
+      height: 40px;
+      max-width: 180px;
+      object-fit: contain;
+      object-position: left center;
     }
-
-    .overlay-logout-btn:hover{
-      background:#dc2626;
-      box-shadow:0 8px 20px rgba(239,68,68,0.4);
-    }
-
-    /* ══════════════════════════════
-       HERO SECTION
-    ══════════════════════════════ */
-
-    .hero{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      text-align:center;
-      padding:90px 20px;
-      animation:fadeIn 2s ease;
-    }
-
-    .hero h1{
-      font-size:55px;
-      color:#38bdf8;
-      margin-bottom:20px;
-      animation:zoomIn 1.5s ease;
-    }
-
-    .hero p{
-      max-width:750px;
-      font-size:20px;
-      color:#cbd5e1;
-      line-height:1.8;
-      margin-bottom:40px;
-      animation:fadeUp 2s ease;
-    }
-
-    /* Cards */
-
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:25px;
-      padding:40px 60px;
-    }
-
-    .card{
-      background:rgba(13,46,82,0.6);
-      padding:30px;
-      border-radius:20px;
-      text-align:center;
-      box-shadow:0 5px 20px rgba(0,0,0,0.3);
-      transition:0.4s;
-      animation:cardFade 1.5s ease;
-      border:1px solid rgba(56,189,248,0.2);
-    }
-
-    .card:hover{
-      transform:translateY(-10px) scale(1.03);
-      box-shadow:0 10px 30px rgba(56,189,248,0.3);
-    }
-
-    .card h3{
-      color:#38bdf8;
-      margin-bottom:15px;
-      font-size:24px;
-    }
-
-    .card p{
-      color:#cbd5e1;
-      line-height:1.6;
-    }
-
-    /* Stats Section */
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:20px;
-      padding:60px 60px;
-      background:rgba(13,46,82,0.3);
-      margin:40px 0;
-    }
-
-    .stat-box{
-      text-align:center;
-      padding:30px;
-      background:rgba(56,189,248,0.1);
-      border:1px solid rgba(56,189,248,0.3);
-      border-radius:15px;
-      animation:slideUp 0.8s ease;
-    }
-
-    .stat-number{
-      font-size:48px;
-      font-weight:bold;
-      color:#38bdf8;
-      animation:countUp 2s ease;
-    }
-
-    .stat-label{
-      font-size:14px;
-      color:#cbd5e1;
-      margin-top:10px;
-      letter-spacing:1px;
-    }
-
-    /* Features Section */
-
-    .features{
-      padding:60px;
-      background:linear-gradient(180deg,rgba(10,31,61,0.5),rgba(26,77,122,0.3));
-    }
-
-    .features h2{
-      text-align:center;
-      font-size:42px;
-      color:#38bdf8;
-      margin-bottom:50px;
-      animation:fadeIn 1s ease;
-    }
-
-    .feature-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:30px;
-    }
-
-    .feature-item{
-      background:rgba(13,46,82,0.6);
-      padding:35px;
-      border-radius:15px;
-      border-left:4px solid #38bdf8;
-      animation:slideInLeft 0.8s ease;
-      transition:0.3s;
-    }
-
-    .feature-item:hover{
-      transform:translateX(10px);
-      box-shadow:0 10px 30px rgba(56,189,248,0.2);
-    }
-
-    .feature-icon{
-      font-size:40px;
-      margin-bottom:15px;
-    }
-
-    .feature-item h3{
-      color:#38bdf8;
-      font-size:20px;
-      margin-bottom:12px;
-    }
-
-    .feature-item p{
-      color:#cbd5e1;
-      line-height:1.6;
-      font-size:14px;
-    }
-
-    /* Services Section */
-
-    .services{
-      padding:60px;
-      background:rgba(13,46,82,0.2);
-    }
-
-    .services h2{
-      text-align:center;
-      font-size:42px;
-      color:#38bdf8;
-      margin-bottom:50px;
-      animation:fadeIn 1s ease;
-    }
-
-    .service-container{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-      gap:25px;
-    }
-
-    .service-card{
-      background:linear-gradient(135deg,rgba(13,46,82,0.8),rgba(26,77,122,0.6));
-      padding:30px;
-      border-radius:15px;
-      border:1px solid rgba(56,189,248,0.2);
-      animation:cardFade 1s ease;
-      transition:0.4s;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .service-card::before{
-      content:'';
-      position:absolute;
-      top:0;
-      left:-100%;
-      width:100%;
-      height:100%;
-      background:linear-gradient(90deg,transparent,rgba(56,189,248,0.2),transparent);
-      transition:0.5s;
-    }
-
-    .service-card:hover::before{
-      left:100%;
-    }
-
-    .service-card:hover{
-      transform:translateY(-8px);
-      box-shadow:0 15px 40px rgba(56,189,248,0.25);
-    }
-
-    .service-card h4{
-      color:#38bdf8;
-      font-size:20px;
-      margin-bottom:10px;
-    }
-
-    .service-card p{
-      color:#cbd5e1;
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    /* Activity Section */
-
-    .recent-activity{
-      padding:60px;
-      background:rgba(10,31,61,0.5);
-    }
-
-    .recent-activity h2{
-      text-align:center;
-      font-size:42px;
-      color:#38bdf8;
-      margin-bottom:40px;
-      animation:fadeIn 1s ease;
-    }
-
-    .activity-list{
-      max-width:900px;
-      margin:0 auto;
-    }
-
-    .activity-item{
-      display:flex;
-      gap:20px;
-      padding:20px;
-      background:rgba(13,46,82,0.6);
-      margin-bottom:15px;
-      border-radius:10px;
-      border-left:4px solid #38bdf8;
-      animation:slideInLeft 0.8s ease;
-      align-items:center;
-    }
-
-    .activity-icon{
-      font-size:28px;
-      min-width:40px;
-    }
-
-    .activity-content{
-      flex:1;
-    }
-
-    .activity-title{
-      color:#38bdf8;
-      font-weight:bold;
-      margin-bottom:5px;
-    }
-
-    .activity-time{
-      color:#94a3b8;
-      font-size:12px;
-    }
-
-    /* CTA Section */
-
-    .cta-section{
-      padding:80px 60px;
-      text-align:center;
-      background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(26,77,122,0.2));
-      margin:40px 60px;
-      border-radius:20px;
-      animation:fadeIn 1.5s ease;
-    }
-
-    .cta-section h2{
-      font-size:38px;
-      color:#38bdf8;
-      margin-bottom:20px;
-    }
-
-    .cta-section p{
-      font-size:18px;
-      color:#cbd5e1;
-      max-width:600px;
-      margin:0 auto 30px;
-      line-height:1.7;
-    }
-
-    .cta-btn{
-      padding:15px 40px;
-      font-size:16px;
-      background:#38bdf8;
-      color:#0d2e52;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:bold;
-      transition:0.3s;
-      animation:pulse 2s infinite;
-    }
-
-    .cta-btn:hover{
-      transform:scale(1.05);
-      background:#0ea5e9;
-      box-shadow:0 10px 30px rgba(56,189,248,0.4);
-    }
-
-    /* Footer */
-
-    footer{
-      background:#0d2e52;
-      padding:40px 60px;
-      text-align:center;
-      border-top:1px solid rgba(56,189,248,0.2);
-      color:#cbd5e1;
-      animation:slideUp 1s ease;
-    }
-
-    footer p{
-      margin:10px 0;
-      font-size:14px;
-    }
-
-    footer .social-links{
-      margin-top:15px;
-      display:flex;
-      justify-content:center;
-      gap:15px;
-    }
-
-    footer .social-links a{
-      color:#38bdf8;
-      text-decoration:none;
-      transition:0.3s;
-    }
-
-    footer .social-links a:hover{
-      color:#0ea5e9;
-    }
-
-    /* ══════════════════════════════
-       ANIMATIONS
-    ══════════════════════════════ */
-
-    @keyframes slideDown{
-      from{ transform:translateY(-100px); opacity:0; }
-      to{   transform:translateY(0);      opacity:1; }
-    }
-
-    @keyframes fadeIn{
-      from{ opacity:0; }
-      to{   opacity:1; }
-    }
-
-    @keyframes zoomIn{
-      from{ transform:scale(0.5); opacity:0; }
-      to{   transform:scale(1);   opacity:1; }
-    }
-
-    @keyframes fadeUp{
-      from{ transform:translateY(50px); opacity:0; }
-      to{   transform:translateY(0);    opacity:1; }
-    }
-
-    @keyframes cardFade{
-      from{ opacity:0; transform:translateY(40px); }
-      to{   opacity:1; transform:translateY(0);    }
-    }
-
-    @keyframes slideInLeft{
-      from{ transform:translateX(-50px); opacity:0; }
-      to{   transform:translateX(0);     opacity:1; }
-    }
-
-    @keyframes slideUp{
-      from{ transform:translateY(50px); opacity:0; }
-      to{   transform:translateY(0);    opacity:1; }
-    }
-
-    @keyframes countUp{
-      from{ opacity:0; transform:scale(0.5); }
-      to{   opacity:1; transform:scale(1);   }
-    }
-
-    @keyframes pulse{
-      0%,100%{ box-shadow:0 0 0 0 rgba(56,189,248,0.7); }
-      50%{     box-shadow:0 0 0 10px rgba(56,189,248,0); }
-    }
-
-    /* ══════════════════════════════
+    /* ═══════════════════════
        RESPONSIVE
-    ══════════════════════════════ */
+    ═══════════════════════ */
 
     /* Tablet */
-    @media (max-width:992px){
+    @media (max-width:1024px) {
+      .sidebar { width:220px; }
+    }
 
-      nav{
-        padding:16px 24px;
+    /* Mobile — sidebar as slide-in overlay */
+    @media (max-width:768px) {
+      .hamburger { display:flex; }
+
+      .sidebar {
+        position:fixed; top:0; left:-270px; width:252px; height:100%;
+        z-index:999; overflow-y:auto;
+        filter:none !important;
+        backdrop-filter:none !important;
+        -webkit-backdrop-filter:none !important;
       }
+      .sidebar.open { left:0; }
 
-      .desktop-nav-links{ display:none; }
-      .desktop-right{     display:none; }
-      .hamburger{         display:flex; }
+      .layout { flex-direction:column; }
+      .main   { padding:10px; }
 
-      .hero h1{ font-size:45px; }
-      .hero p{  font-size:18px; }
+      .topbar { padding:10px 12px; border-radius:12px; }
+      .page-title { font-size:16px; }
+      .online-badge { display:none; }
+      #userEmail { max-width:100px; font-size:11.5px; padding:5px 9px; }
+      .logout-btn { padding:6px 10px; font-size:11.5px; }
 
-      .cards{   padding:30px; grid-template-columns:repeat(2,1fr); }
-      .stats{   padding:40px 30px; grid-template-columns:repeat(2,1fr); }
-      .features{ padding:40px 30px; }
-      .features h2{ font-size:35px; }
-      .feature-grid{ grid-template-columns:repeat(2,1fr); gap:20px; }
-      .services{ padding:40px 30px; }
-      .services h2{ font-size:35px; }
-      .service-container{ grid-template-columns:repeat(2,1fr); }
-      .recent-activity{ padding:40px 30px; }
-      .recent-activity h2{ font-size:35px; }
-      .cta-section{ padding:50px 30px; margin:30px 30px; }
-      .cta-section h2{ font-size:32px; }
-      .cta-section p{ font-size:16px; }
-      footer{ padding:30px 30px; }
+      .cards { grid-template-columns:repeat(2,1fr); gap:10px; }
+      .card p { font-size:24px; }
+      .card-ico { font-size:20px; }
+
+      .svc-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
+      .info-row  { grid-template-columns:1fr; }
+      .set-grid  { grid-template-columns:1fr; }
+      .qa-grid   { grid-template-columns:repeat(3,1fr); gap:8px; }
+
+      .section-box { padding:16px; }
+      .section-box h2 { font-size:20px; }
     }
 
-    /* Mobile */
-    @media (max-width:768px){
-
-      .hero{ padding:60px 20px; }
-      .hero h1{ font-size:35px; }
-      .hero p{  font-size:16px; }
-
-      .cards{ padding:20px; grid-template-columns:1fr; }
-      .stats{ padding:30px 20px; grid-template-columns:1fr; }
-      .stat-box{ padding:20px; }
-      .stat-number{ font-size:36px; }
-
-      .features{ padding:30px 20px; }
-      .features h2{ font-size:28px; margin-bottom:30px; }
-      .feature-grid{ grid-template-columns:1fr; gap:15px; }
-      .feature-item{ padding:25px; }
-      .feature-icon{ font-size:32px; }
-
-      .services{ padding:30px 20px; }
-      .services h2{ font-size:28px; margin-bottom:30px; }
-      .service-container{ grid-template-columns:1fr; }
-
-      .recent-activity{ padding:30px 20px; }
-      .recent-activity h2{ font-size:28px; }
-      .activity-item{ padding:15px; margin-bottom:10px; }
-
-      .cta-section{ padding:40px 20px; margin:20px 20px; }
-      .cta-section h2{ font-size:26px; }
-      .cta-section p{ font-size:15px; }
-      .cta-btn{ padding:12px 30px; font-size:14px; }
-
-      footer{ padding:25px 20px; }
+    @media (max-width:420px) {
+      .cards    { grid-template-columns:1fr 1fr; }
+      .svc-grid { grid-template-columns:repeat(3,1fr); }
+      .qa-grid  { grid-template-columns:repeat(2,1fr); }
     }
 
-    /* Small Mobile */
-    @media (max-width:480px){
-
-      .logo{ font-size:22px; }
-
-      .hero h1{ font-size:28px; }
-      .hero p{  font-size:15px; }
-
-      .cards{ padding:15px; gap:15px; }
-      .card{ padding:20px; }
-      .card h3{ font-size:18px; }
-
-      .stats{ padding:20px 15px; gap:15px; }
-      .stat-box{ padding:15px; }
-      .stat-number{ font-size:28px; }
-      .stat-label{ font-size:12px; }
-
-      .features{ padding:20px 15px; }
-      .features h2{ font-size:24px; margin-bottom:20px; }
-      .feature-item{ padding:20px; border-left-width:3px; }
-      .feature-icon{ font-size:28px; }
-      .feature-item h3{ font-size:16px; }
-
-      .services{ padding:20px 15px; }
-      .services h2{ font-size:24px; }
-
-      .recent-activity{ padding:20px 15px; }
-      .recent-activity h2{ font-size:24px; }
-      .activity-item{
-        padding:12px;
-        flex-direction:column;
-        text-align:center;
-      }
-      .activity-icon{ font-size:24px; min-width:auto; margin-bottom:10px; }
-
-      .cta-section{ padding:30px 15px; margin:15px; border-radius:15px; }
-      .cta-section h2{ font-size:22px; }
-      .cta-section p{ font-size:14px; }
-      .cta-btn{ padding:10px 25px; font-size:13px; }
-
-      footer{ padding:20px 15px; }
-      footer p{ font-size:12px; }
-    }
-
+    /* ── scroll reveal ── */
+    .reveal { opacity:0; transform:translateY(14px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
+    .reveal.visible { opacity:1; transform:none; }
   </style>
-
 </head>
 <body>
 
-  <!-- ═══════════════════ NAVBAR (desktop) ═══════════════════ -->
-  <nav>
+<div class="bg-deco"></div>
+<div class="bg-grid"></div>
 
-    <div class="logo">Officer Portal</div>
+<!-- Mobile overlay (behind sidebar) -->
+<div class="overlay" id="overlay"></div>
 
-    <!-- Desktop links -->
-    <ul class="desktop-nav-links">
-      <li><a href="404ErrorPage.html">Home</a></li>
-      <li><a href="404ErrorPage.html">Applications</a></li>
-      <li><a href="404ErrorPage.html">Approvals</a></li>
-      <li><a href="404ErrorPage.html">Reports</a></li>
-    </ul>
+<div class="layout">
 
-    <!-- Desktop right section -->
-    <div class="desktop-right">
-      <div class="user-info" id="userInfoDesktop"></div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sb-header">
+      <div class="sb-logo">
+        <div class="sb-emblem">🏛️</div>
+        <!-- <div class="sb-title">
+          <h2>Officer Portal</h2>
+          <div class="sb-sub">e-Governance Suite</div>
+        </div> -->
+        <div class="logo">
+      <!-- <div class="logo-icon">🏛️</div> -->
+      <img src="./gallery/stackly-logo (1).webp" alt="GovServe" class="logo-img" />
+    </div>
+      </div>
+      <div class="officer-chip">
+        <div class="officer-avatar" id="sbAvatar">O</div>
+        <div class="officer-info">
+          <strong id="sbName">Officer</strong>
+          <span>Verified Officer</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Hamburger — visible only on mobile/tablet -->
-    <button class="hamburger" aria-label="Open navigation menu" onclick="openNav()">☰</button>
+    <nav class="sb-nav">
+      <div class="nav-lbl">Main</div>
+      <button id="nb-dashboard"><span class="ni">🏠</span> Dashboard</button>
+      <button id="nb-applications"><span class="ni">📁</span> Applications</button>
+      <button id="nb-approvals"><span class="ni">✅</span> Approvals</button>
 
-  </nav>
+      <div class="nav-lbl">Management</div>
+      <button id="nb-analytics"><span class="ni">📊</span> Analytics</button>
+      <button id="nb-grievance"><span class="ni">📋</span> Grievances</button>
+      <button id="nb-citizens"><span class="ni">👥</span> Citizens</button>
 
-  <!-- ═══════════════════ FULLSCREEN MOBILE OVERLAY ═══════════════════ -->
-  <div class="nav-overlay" id="navOverlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+      <div class="nav-lbl">Account</div>
+      <button id="nb-reports"><span class="ni">📄</span> Reports</button>
+      <button id="nb-settings"><span class="ni">🔧</span> Settings</button>
+    </nav>
 
-    <div class="overlay-header">
-      <div class="logo">Officer Portal</div>
-      <button class="close-btn" aria-label="Close navigation menu" onclick="closeNav()">✕</button>
+    <div class="sb-footer">Government of India · Officer v3.1.0</div>
+  </aside>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-l">
+        <button class="hamburger" id="hamburger">☰</button>
+        <div>
+          <div class="page-title" id="pageTitle">Dashboard</div>
+          <div class="page-sub">Officer Management Portal</div>
+        </div>
+      </div>
+      <div class="topbar-r">
+        <div class="online-badge"><div class="dot"></div>System Online</div>
+        <div id="userEmail">officer@gov.in</div>
+        <button class="logout-btn" id="logoutBtn">⎋ Logout</button>
+      </div>
     </div>
 
-    <ul class="overlay-nav-links">
-      <li>
-        <a href="404ErrorPage.html" onclick="closeNav()">
-          <span class="link-icon">🏠</span> Home
-        </a>
-      </li>
-      <li>
-        <a href="404ErrorPage.html" onclick="closeNav()">
-          <span class="link-icon">📋</span> Applications
-        </a>
-      </li>
-      <li>
-        <a href="404ErrorPage.html" onclick="closeNav()">
-          <span class="link-icon">✅</span> Approvals
-        </a>
-      </li>
-      <li>
-        <a href="404ErrorPage.html" onclick="closeNav()">
-          <span class="link-icon">📊</span> Reports
-        </a>
-      </li>
-    </ul>
-
-    <div class="overlay-divider"></div>
-
-    <div class="overlay-user-info" id="userInfoMobile"></div>
-    <button class="overlay-logout-btn" onclick="logout()">Logout</button>
+    <!-- Dynamic content -->
+    <div id="content"></div>
 
   </div>
+</div>
 
-  <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
-  <section class="hero">
-    <!-- <h1>Welcome Officer</h1> -->
-    <h1>Welcome back,<br><span class="name-highlight" id="heroName">Citizen</span></h1>
+<script>
+/* ══════════════════════════════════════
+   SIDEBAR TOGGLE
+══════════════════════════════════════ */
+const sidebar   = document.getElementById('sidebar');
+const overlay   = document.getElementById('overlay');
+const hamburger = document.getElementById('hamburger');
 
-    <p>
-      Manage citizen requests, verify applications,
-      approve services, and monitor government
-      operations efficiently through the officer portal.
-    </p>
-  </section>
+hamburger.addEventListener('click', function() {
+  sidebar.classList.add('open');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+overlay.addEventListener('click', closeSidebar);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
 
-  <!-- ═══════════════════ CARDS ═══════════════════ -->
-  <section class="cards">
-    <div class="card">
-      <h3>View Applications</h3>
-      <p>Access and review citizen applications submitted online.</p>
-    </div>
-    <div class="card">
-      <h3>Approve Requests</h3>
-      <p>Verify and approve applications quickly and securely.</p>
-    </div>
-    <div class="card">
-      <h3>Generate Reports</h3>
-      <p>Analyze application statistics and department reports easily.</p>
-    </div>
-  </section>
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
 
-  <!-- ═══════════════════ STATS ═══════════════════ -->
-  <section class="stats">
-    <div class="stat-box">
-      <div class="stat-number">1,250+</div>
-      <div class="stat-label">Applications Processed</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-number">98%</div>
-      <div class="stat-label">Approval Rate</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-number">24/7</div>
-      <div class="stat-label">Support Available</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-number">500+</div>
-      <div class="stat-label">Active Officers</div>
-    </div>
-  </section>
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+const sections = ['dashboard','applications','approvals','analytics','grievance','citizens','reports','settings'];
 
-  <!-- ═══════════════════ FEATURES ═══════════════════ -->
-  <section class="features">
-    <h2>Officer Responsibilities & Features</h2>
-    <div class="feature-grid">
-      <div class="feature-item">
-        <div class="feature-icon">📋</div>
-        <h3>Application Review</h3>
-        <p>Review detailed citizen applications with proper documentation, verify all required information, and ensure compliance with government guidelines and regulations.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">✅</div>
-        <h3>Approval Authority</h3>
-        <p>Make informed decisions on applications with comprehensive tools, access to historical data, and integrated decision-support systems for fair processing.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">📊</div>
-        <h3>Report Generation</h3>
-        <p>Generate detailed performance reports, track departmental metrics, and analyze trends with advanced analytics and customizable dashboard views.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">👥</div>
-        <h3>Citizen Communication</h3>
-        <p>Send notifications, updates, and feedback to citizens through multiple channels, maintaining transparent communication throughout the process.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">🔒</div>
-        <h3>Data Security</h3>
-        <p>Access secure, encrypted systems with role-based permissions, audit trails, and compliance with national data protection standards.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">⚙️</div>
-        <h3>Workflow Management</h3>
-        <p>Manage approval workflows, set priorities, track pending items, and collaborate with other departments seamlessly within the portal.</p>
-      </div>
-    </div>
-  </section>
+sections.forEach(function(sec) {
+  var btn = document.getElementById('nb-'+sec);
+  if (btn) btn.addEventListener('click', function(){ navigate(sec); });
+});
 
-  <!-- ═══════════════════ SERVICES ═══════════════════ -->
-  <section class="services">
-    <h2>Services Managed by Officers</h2>
-    <div class="service-container">
-      <div class="service-card">
-        <h4>🏛️ License & Permits</h4>
-        <p>Process business licenses, construction permits, and trade certifications with verification and compliance checks.</p>
-      </div>
-      <div class="service-card">
-        <h4>🎓 Educational Support</h4>
-        <p>Review scholarship applications, certifications, and educational assistance program requests from citizens.</p>
-      </div>
-      <div class="service-card">
-        <h4>💼 Employment Services</h4>
-        <p>Manage job placements, skill certifications, and employment assistance program approvals.</p>
-      </div>
-      <div class="service-card">
-        <h4>🏥 Healthcare Programs</h4>
-        <p>Process health insurance applications, medical assistance claims, and healthcare program enrollments.</p>
-      </div>
-      <div class="service-card">
-        <h4>🏠 Housing Assistance</h4>
-        <p>Review housing loan applications, subsidy requests, and property registration documents.</p>
-      </div>
-      <div class="service-card">
-        <h4>💰 Financial Benefits</h4>
-        <p>Process pension applications, subsidy approvals, and other financial assistance program requests.</p>
-      </div>
-    </div>
-  </section>
+const sectionTitles = {
+  dashboard:'Dashboard', applications:'Applications', approvals:'Approvals',
+  analytics:'Analytics', grievance:'Grievances', citizens:'Citizens Directory',
+  reports:'Reports', settings:'Settings'
+};
 
-  <!-- ═══════════════════ RECENT ACTIVITY ═══════════════════ -->
-  <section class="recent-activity">
-    <h2>Recent Activities</h2>
-    <div class="activity-list">
-      <div class="activity-item">
-        <div class="activity-icon">✔️</div>
-        <div class="activity-content">
-          <div class="activity-title">Application Approved - License Registration</div>
-          <div class="activity-time">Today at 10:30 AM</div>
+function navigate(section) {
+  closeSidebar();
+  sections.forEach(function(s){ var b=document.getElementById('nb-'+s); if(b) b.classList.remove('active'); });
+  var ab = document.getElementById('nb-'+section);
+  if (ab) ab.classList.add('active');
+  document.getElementById('pageTitle').textContent = sectionTitles[section] || section;
+  renderSection(section);
+  initReveal();
+}
+
+/* ══════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════ */
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  localStorage.clear(); window.location.href='index.html';
+});
+
+/* ══════════════════════════════════════
+   RENDER SECTIONS
+══════════════════════════════════════ */
+function renderSection(section) {
+  var el = document.getElementById('content');
+  el.innerHTML = '';
+
+  /* ── DASHBOARD ── */
+  if (section === 'dashboard') {
+    el.innerHTML = `
+      <div class="ticker reveal">
+        <div class="ticker-tag">LIVE</div>
+        <div class="ticker-wrap">
+          <div class="ticker-belt">
+            <span>1,042 pending applications awaiting officer review</span>
+            <span>Monthly performance report due by 31 May 2025</span>
+            <span>New grievance intake portal launched — officers must update profiles</span>
+            <span>Portal scheduled maintenance: 20 May 2025, 2–4 AM IST</span>
+            <span>1,042 pending applications awaiting officer review</span>
+            <span>Monthly performance report due by 31 May 2025</span>
+            <span>New grievance intake portal launched — officers must update profiles</span>
+            <span>Portal scheduled maintenance: 20 May 2025, 2–4 AM IST</span>
+          </div>
         </div>
       </div>
-      <div class="activity-item">
-        <div class="activity-icon">📬</div>
-        <div class="activity-content">
-          <div class="activity-title">New Applications Received - 25 Submitted</div>
-          <div class="activity-time">Today at 9:15 AM</div>
+
+      <div class="cards reveal">
+        <div class="card c1">
+          <div class="card-ico">📁</div>
+          <h3>Total Applications</h3>
+          <p>4,820</p>
+          <div class="card-chg up">▲ 12% this month</div>
+        </div>
+        <div class="card c2">
+          <div class="card-ico">✅</div>
+          <h3>Approved Today</h3>
+          <p>186</p>
+          <div class="card-chg up">▲ 8% vs yesterday</div>
+        </div>
+        <div class="card c3">
+          <div class="card-ico">⏳</div>
+          <h3>Pending Review</h3>
+          <p>1,042</p>
+          <div class="card-chg down">▼ 3% vs last week</div>
+        </div>
+        <div class="card c4">
+          <div class="card-ico">📋</div>
+          <h3>Grievances Open</h3>
+          <p>318</p>
+          <div class="card-chg up">▲ 22% resolved today</div>
         </div>
       </div>
-      <div class="activity-item">
-        <div class="activity-icon">📊</div>
-        <div class="activity-content">
-          <div class="activity-title">Monthly Report Generated Successfully</div>
-          <div class="activity-time">Yesterday at 5:45 PM</div>
-        </div>
+
+      <div class="sec-lbl reveal" style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        Quick Actions
+        <span style="flex:1;height:1px;background:rgba(255,255,255,.07);display:block;"></span>
       </div>
-      <div class="activity-item">
-        <div class="activity-icon">👥</div>
-        <div class="activity-content">
-          <div class="activity-title">New Officer Added to Department</div>
-          <div class="activity-time">Yesterday at 2:30 PM</div>
-        </div>
+      <div class="qa-grid reveal">
+        <div class="qa-card"><div class="qa-icon">📥</div><h4>New Application</h4><p>Submit for review</p></div>
+        <div class="qa-card"><div class="qa-icon">🔍</div><h4>Verify Docs</h4><p>Document check</p></div>
+        <div class="qa-card"><div class="qa-icon">📤</div><h4>Send Notice</h4><p>Notify citizen</p></div>
+        <div class="qa-card"><div class="qa-icon">📊</div><h4>Run Report</h4><p>Generate stats</p></div>
+        <div class="qa-card"><div class="qa-icon">🔔</div><h4>Escalate</h4><p>Flag urgent issue</p></div>
+        <div class="qa-card"><div class="qa-icon">🖨️</div><h4>Print Order</h4><p>Issue printout</p></div>
       </div>
-      <div class="activity-item">
-        <div class="activity-icon">🔔</div>
-        <div class="activity-content">
-          <div class="activity-title">System Update & Maintenance Completed</div>
-          <div class="activity-time">2 days ago</div>
-        </div>
+
+      <div class="chart-box reveal">
+        <h3>📈 Applications vs Approvals — 2025</h3>
+        <canvas id="mainChart" height="80"></canvas>
       </div>
-    </div>
-  </section>
 
-  <!-- ═══════════════════ CTA ═══════════════════ -->
-  <section class="cta-section">
-    <h2>Ready to Get Started?</h2>
-    <p>Access your dashboard now to review pending applications, manage approvals, and monitor department performance. Work efficiently with our integrated tools and systems.</p>
-    <button class="cta-btn" onclick="alert('Loading Dashboard...')">Access Dashboard</button>
-  </section>
+      <div class="info-row reveal">
+        <div class="info-card">
+          <h4>🔔 Recent Activity</h4>
+          <div class="info-item"><span>Application #APP-20510 approved</span><strong style="color:#4ade80">Done</strong></div>
+          <div class="info-item"><span>Grievance #GR-5502 assigned</span><strong style="color:var(--saffron)">Pending</strong></div>
+          <div class="info-item"><span>Bulk approvals — 42 certificates</span><strong style="color:#4ade80">Done</strong></div>
+          <div class="info-item"><span>Escalation #ESC-2210 created</span><strong style="color:#f87171">Urgent</strong></div>
+          <div class="info-item"><span>Monthly stats submitted</span><strong style="color:#60a5fa">In Review</strong></div>
+        </div>
+        <div class="info-card">
+          <h4>📊 Departmental Completion</h4>
+          <div id="progMain"></div>
+        </div>
+      </div>`;
 
-  <!-- ═══════════════════ FOOTER ═══════════════════ -->
-  <footer>
-    <p>&copy; 2026 Government Service Portal. All rights reserved.</p>
-    <p>Dedicated to serving citizens with transparency and efficiency.</p>
-    <div class="social-links">
-      <a href="404ErrorPage.html">Privacy Policy</a>
-      <a href="404ErrorPage.html">Terms of Service</a>
-      <a href="404ErrorPage.html">Contact Support</a>
-    </div>
-  </footer>
+    drawLineChart('mainChart',
+      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+      [3200,3800,4100,4500,3900,4200,4800,5100],
+      [3050,3600,3980,4420,3750,4100,4650,4980]
+    );
+    drawProgress('progMain', [
+      { label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
+      { label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)' },
+      { label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
+      { label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    ]);
+  }
 
-  <script>
+  /* ── APPLICATIONS ── */
+  else if (section === 'applications') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>📁 Applications Management</h2>
+        <p class="sub">Review, process, and manage all citizen service applications.</p>
 
-    /* ── User info ── */
-    const email = localStorage.getItem("userEmail") || "officer@gov.in";
+        <div class="svc-grid">
+          ${[['🪪','Aadhaar'],['🚗','Driving Lic.'],['🏠','Land Records'],
+             ['💰','Income Cert.'],['📦','Ration Card'],['🏥','Health Card'],
+             ['🎓','Scholarship'],['💡','Electricity'],['🚰','Water Supply'],
+             ['🏗️','Building Permit'],['🌾','Farmer Aid'],['💼','Employment']
+          ].map(function(x){ return '<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>'; }).join('')}
+        </div>
 
-    document.getElementById("userInfoDesktop").textContent = email;
-    document.getElementById("userInfoMobile").textContent  = email;
+        <h4 style="font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:4px;">📋 Pending Applications</h4>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>App ID</th><th>Citizen</th><th>Service</th><th>Applied On</th><th>Department</th><th>Status</th></tr>
+            <tr><td>#APP-20520</td><td>Ramaiah K.</td><td>Income Certificate</td><td>12 May 2025</td><td>Revenue</td><td><span class="badge pending">Pending</span></td></tr>
+            <tr><td>#APP-20518</td><td>Fatima B.</td><td>Ration Card Renewal</td><td>10 May 2025</td><td>Civil Supplies</td><td><span class="badge review">In Review</span></td></tr>
+            <tr><td>#APP-20510</td><td>Suresh T.</td><td>Health Card (PMJAY)</td><td>08 May 2025</td><td>Health & FW</td><td><span class="badge active">Approved</span></td></tr>
+            <tr><td>#APP-20504</td><td>Anita M.</td><td>Scholarship Form</td><td>04 May 2025</td><td>Education</td><td><span class="badge pending">Pending</span></td></tr>
+            <tr><td>#APP-20499</td><td>Venkat R.</td><td>Building Permit</td><td>30 Apr 2025</td><td>Mun. Corp.</td><td><span class="badge closed">Rejected</span></td></tr>
+            <tr><td>#APP-20490</td><td>Lakshmi P.</td><td>Driving Licence</td><td>28 Apr 2025</td><td>Transport</td><td><span class="badge active">Approved</span></td></tr>
+          </table>
+        </div>
+      </div>`;
+  }
 
-    /* ── Auth ── */
-    function logout(){
-      localStorage.removeItem("userEmail");
-      window.location.href = "index.html";
-    }
+  /* ── APPROVALS ── */
+  else if (section === 'approvals') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>✅ Approval Queue</h2>
+        <p class="sub">Applications awaiting your authority. Avg. processing time: 2.4 days.</p>
 
-    /* ── Mobile overlay ── */
-    function openNav(){
-      document.getElementById("navOverlay").classList.add("open");
-      document.body.style.overflow = "hidden";
-    }
+        <div class="cards" style="margin-bottom:18px">
+          <div class="card c1"><div class="card-ico">⏳</div><h3>Awaiting Approval</h3><p>142</p><div class="card-chg up">High priority: 18</div></div>
+          <div class="card c2"><div class="card-ico">✅</div><h3>Approved Today</h3><p>56</p><div class="card-chg up">▲ 14% vs yesterday</div></div>
+          <div class="card c3"><div class="card-ico">❌</div><h3>Rejected Today</h3><p>7</p><div class="card-chg down">Incomplete docs</div></div>
+        </div>
 
-    function closeNav(){
-      document.getElementById("navOverlay").classList.remove("open");
-      document.body.style.overflow = "";
-    }
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>App ID</th><th>Citizen</th><th>Service</th><th>Submitted</th><th>Priority</th><th>Action</th></tr>
+            <tr><td>#APP-20521</td><td>Mohammed F.</td><td>Land Records Copy</td><td>13 May 2025</td><td><span class="badge pending">High</span></td><td><span class="badge review">Approve</span></td></tr>
+            <tr><td>#APP-20519</td><td>Priya N.</td><td>Caste Certificate</td><td>12 May 2025</td><td><span class="badge review">Medium</span></td><td><span class="badge review">Review</span></td></tr>
+            <tr><td>#APP-20516</td><td>Kiran K.</td><td>Income Cert.</td><td>11 May 2025</td><td><span class="badge active">Normal</span></td><td><span class="badge active">Approved</span></td></tr>
+            <tr><td>#APP-20514</td><td>Sujatha D.</td><td>Pension Enrollment</td><td>10 May 2025</td><td><span class="badge pending">High</span></td><td><span class="badge review">Approve</span></td></tr>
+            <tr><td>#APP-20511</td><td>Lalitha P.</td><td>Water Connection</td><td>09 May 2025</td><td><span class="badge active">Normal</span></td><td><span class="badge closed">Rejected</span></td></tr>
+          </table>
+        </div>
 
-    // Close on Escape key
-    document.addEventListener("keydown", function(e){
-      if(e.key === "Escape") closeNav();
+        <div id="tlApprovals" style="margin-top:22px"></div>
+      </div>`;
+
+    var tla = document.getElementById('tlApprovals');
+    var evts = [
+      { c:'#4ade80', t:'Bulk Approval — 42 Income Certificates', m:'Today, 11:20 AM · Revenue Department clearance' },
+      { c:'#FF9933', t:'Escalation #ESC-2210 Raised', m:'Today, 9:45 AM · Building permit under legal scrutiny' },
+      { c:'#60a5fa', t:'New Batch Assigned — 56 Applications', m:'Yesterday, 4:00 PM · From District Collector office' },
+      { c:'#a78bfa', t:'Monthly Approval Target Achieved',  m:'08 May 2025 · 98.2% approval rate this month' },
+    ];
+    tla.innerHTML = '<h4 style="font-family:\'Rajdhani\',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:14px;">📅 Approval Activity</h4>' +
+    evts.map(function(e,i){ return '<div class="tl-item" style="animation-delay:'+i*.08+'s"><div class="tl-side"><div class="tl-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>'+(i<evts.length-1?'<div class="tl-line"></div>':'')+'</div><div class="tl-body"><h5>'+e.t+'</h5><p>'+e.m+'</p></div></div>'; }).join('');
+  }
+
+  /* ── ANALYTICS ── */
+  else if (section === 'analytics') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>📊 Analytics Overview</h2>
+        <p class="sub">Officer performance metrics and departmental statistics.</p>
+
+        <div class="cards" style="margin-bottom:18px">
+          <div class="card c1"><div class="card-ico">📬</div><h3>Applications YTD</h3><p>42,810</p><div class="card-chg up">▲ 25% vs last year</div></div>
+          <div class="card c2"><div class="card-ico">⏱️</div><h3>Avg Resolution</h3><p>2.4 Days</p><div class="card-chg up">▼ 18% faster</div></div>
+          <div class="card c3"><div class="card-ico">⭐</div><h3>Officer Rating</h3><p>4.8/5</p><div class="card-chg up">▲ 3% this quarter</div></div>
+          <div class="card c4"><div class="card-ico">🏆</div><h3>Compliance</h3><p>98.2%</p><div class="card-chg up">▲ 1.4% this month</div></div>
+        </div>
+
+        <div class="chart-box" style="margin-bottom:18px">
+          <h3>📉 Applications Processed vs Approved (Monthly)</h3>
+          <canvas id="analyticsChart" height="88"></canvas>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Month</th><th>Received</th><th>Approved</th><th>Rejected</th><th>Pending</th><th>Avg Days</th></tr>
+            <tr><td>January</td><td>3,200</td><td>3,050</td><td>82</td><td>68</td><td>3.1</td></tr>
+            <tr><td>February</td><td>3,800</td><td>3,600</td><td>110</td><td>90</td><td>2.8</td></tr>
+            <tr><td>March</td><td>4,100</td><td>3,980</td><td>78</td><td>42</td><td>2.5</td></tr>
+            <tr><td>April</td><td>4,500</td><td>4,420</td><td>55</td><td>25</td><td>2.3</td></tr>
+          </table>
+        </div>
+
+        <div class="info-row" style="margin-top:18px">
+          <div class="info-card">
+            <h4>📌 Dept. Workload</h4>
+            <div id="deptProg"></div>
+          </div>
+          <div class="info-card">
+            <h4>📋 Key Metrics</h4>
+            <div class="info-item"><span>Avg Response Time</span><strong>2.4 days</strong></div>
+            <div class="info-item"><span>Citizen Satisfaction</span><strong>87%</strong></div>
+            <div class="info-item"><span>SLA Compliance</span><strong>98.2%</strong></div>
+            <div class="info-item"><span>Escalations This Month</span><strong>14</strong></div>
+            <div class="info-item"><span>Total Officers Active</span><strong>196</strong></div>
+          </div>
+        </div>
+      </div>`;
+
+    setTimeout(function() {
+      var ctx = document.getElementById('analyticsChart');
+      if (!ctx) return;
+      new Chart(ctx, {
+        type:'bar',
+        data:{
+          labels:['Jan','Feb','Mar','Apr','May','Jun'],
+          datasets:[
+            { label:'Received',  data:[3200,3800,4100,4500,3900,4200], backgroundColor:'rgba(255,153,51,.45)', borderColor:'#FF9933', borderWidth:2, borderRadius:5 },
+            { label:'Approved',  data:[3050,3600,3980,4420,3750,4100], backgroundColor:'rgba(19,136,8,.45)',  borderColor:'#138808', borderWidth:2, borderRadius:5 },
+          ]
+        },
+        options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8' } } },
+          scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+      });
+    }, 80);
+
+    drawProgress('deptProg', [
+      { label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
+      { label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)' },
+      { label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
+      { label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    ]);
+  }
+
+  /* ── GRIEVANCES ── */
+  else if (section === 'grievance') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>📋 Grievance Management</h2>
+        <p class="sub">Track and resolve citizen complaints. Target resolution: 4 days.</p>
+
+        <div class="cards" style="margin-bottom:18px">
+          <div class="card c1"><div class="card-ico">📬</div><h3>Open Grievances</h3><p>318</p><div class="card-chg up">▲ 5 new today</div></div>
+          <div class="card c2"><div class="card-ico">✅</div><h3>Resolved Today</h3><p>42</p><div class="card-chg up">▲ 12% avg</div></div>
+          <div class="card c3"><div class="card-ico">⚠️</div><h3>SLA Breach Risk</h3><p>23</p><div class="card-chg down">Needs attention</div></div>
+        </div>
+
+        <div id="tlGriev" style="margin-bottom:20px"></div>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Ticket</th><th>Citizen</th><th>Issue</th><th>Department</th><th>Filed</th><th>Status</th></tr>
+            <tr><td>#GR-5510</td><td>Ramaiah K.</td><td>Electricity Bill Dispute</td><td>DISCOM</td><td>13 May 2025</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>#GR-5508</td><td>Fatima B.</td><td>Water Supply Outage</td><td>Jal Board</td><td>12 May 2025</td><td><span class="badge pending">Pending</span></td></tr>
+            <tr><td>#GR-5500</td><td>Suresh T.</td><td>PDS Ration Not Received</td><td>Civil Supplies</td><td>09 May 2025</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>#GR-5490</td><td>Anita M.</td><td>Road Pothole Complaint</td><td>Mun. Corp.</td><td>05 May 2025</td><td><span class="badge closed">Closed</span></td></tr>
+            <tr><td>#GR-5480</td><td>Venkat R.</td><td>Pension Delay — 2 months</td><td>Social Welfare</td><td>28 Apr 2025</td><td><span class="badge pending">Pending</span></td></tr>
+          </table>
+        </div>
+      </div>`;
+
+    var tl = document.getElementById('tlGriev');
+    var gevts = [
+      { c:'#4ade80', t:'#GR-5510 Assigned to DISCOM Officer Sharma', m:'Today, 10:32 AM' },
+      { c:'#FF9933', t:'#GR-5508 Escalated — SLA Breach Imminent', m:'Yesterday, 3:15 PM' },
+      { c:'#60a5fa', t:'Bulk Resolution — 120 tickets closed', m:'08 May 2025' },
+      { c:'#a78bfa', t:'SMS Notification System Activated', m:'01 May 2025' },
+    ];
+    tl.innerHTML = '<h4 style="font-family:\'Rajdhani\',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:12px;">📅 Recent Updates</h4>' +
+    gevts.map(function(e,i){ return '<div class="tl-item" style="animation-delay:'+i*.08+'s"><div class="tl-side"><div class="tl-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>'+(i<gevts.length-1?'<div class="tl-line"></div>':'')+'</div><div class="tl-body"><h5>'+e.t+'</h5><p>'+e.m+'</p></div></div>'; }).join('');
+  }
+
+  /* ── CITIZENS ── */
+  else if (section === 'citizens') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>👥 Citizens Directory</h2>
+        <p class="sub">Overview of registered citizens and their service records.</p>
+
+        <div class="cards" style="margin-bottom:18px">
+          <div class="card c1"><div class="card-ico">🧑‍🤝‍🧑</div><h3>Total Registered</h3><p>2.4 L</p><div class="card-chg up">▲ 5% this month</div></div>
+          <div class="card c2"><div class="card-ico">✅</div><h3>Verified Citizens</h3><p>2.1 L</p><div class="card-chg up">88% verified</div></div>
+          <div class="card c3"><div class="card-ico">⏳</div><h3>Pending Verification</h3><p>18,400</p><div class="card-chg down">Awaiting docs</div></div>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Name</th><th>Aadhaar</th><th>District</th><th>Active Apps</th><th>Verified</th><th>Status</th></tr>
+            <tr><td>Ramaiah K.</td><td>XXXX-4521</td><td>Krishna</td><td>3</td><td>Yes</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>Fatima Begum</td><td>XXXX-7832</td><td>Guntur</td><td>1</td><td>Yes</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>Suresh Teja</td><td>XXXX-3391</td><td>Vijayawada</td><td>2</td><td>No</td><td><span class="badge pending">Pending</span></td></tr>
+            <tr><td>Anita Murthy</td><td>XXXX-6612</td><td>Nellore</td><td>0</td><td>Yes</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>Venkat Rao</td><td>XXXX-9910</td><td>Eluru</td><td>4</td><td>Yes</td><td><span class="badge active">Active</span></td></tr>
+            <tr><td>Kavitha Devi</td><td>XXXX-1155</td><td>Krishna</td><td>1</td><td>No</td><td><span class="badge pending">Pending</span></td></tr>
+          </table>
+        </div>
+
+        <div class="info-row" style="margin-top:18px">
+          <div class="info-card">
+            <h4>📌 District Distribution</h4>
+            <div id="distProg"></div>
+          </div>
+          <div class="info-card">
+            <h4>📊 Registration Stats</h4>
+            <div class="info-item"><span>New This Month</span><strong>4,210</strong></div>
+            <div class="info-item"><span>Aadhaar Linked</span><strong>2.28 L</strong></div>
+            <div class="info-item"><span>Mobile Verified</span><strong>2.18 L</strong></div>
+            <div class="info-item"><span>BPL Category</span><strong>68,400</strong></div>
+            <div class="info-item"><span>Senior Citizens</span><strong>32,100</strong></div>
+          </div>
+        </div>
+      </div>`;
+
+    drawProgress('distProg', [
+      { label:'Krishna',    pct:78, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
+      { label:'Guntur',     pct:62, color:'linear-gradient(90deg,#138808,#00c853)' },
+      { label:'Vijayawada', pct:55, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
+      { label:'Nellore',    pct:44, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    ]);
+  }
+
+  /* ── REPORTS ── */
+  else if (section === 'reports') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>📄 Reports Centre</h2>
+        <p class="sub">Generate, download, and submit departmental performance reports.</p>
+
+        <div class="svc-grid" style="margin-bottom:24px">
+          ${[['📊','Monthly Stats'],['📋','Case Summary'],['📈','Performance'],
+             ['🏆','Compliance'],['💸','Subsidy Audit'],['📬','Grievance Log'],
+             ['👥','Officer Report'],['🗂️','Archive'],
+          ].map(function(x){ return '<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>'; }).join('')}
+        </div>
+
+        <div class="chart-box" style="margin-bottom:18px">
+          <h3>📉 Monthly Report Summary — 2025</h3>
+          <canvas id="reportChart" height="82"></canvas>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>Report</th><th>Period</th><th>Generated By</th><th>Date</th><th>Status</th></tr>
+            <tr><td>Monthly Performance</td><td>Apr 2025</td><td>D. Collector</td><td>01 May 2025</td><td><span class="badge active">Submitted</span></td></tr>
+            <tr><td>Grievance Summary</td><td>Apr 2025</td><td>Sr. Officer</td><td>30 Apr 2025</td><td><span class="badge active">Submitted</span></td></tr>
+            <tr><td>Subsidy Audit</td><td>Q1 2025</td><td>Finance Dept.</td><td>15 Apr 2025</td><td><span class="badge review">Under Review</span></td></tr>
+            <tr><td>Officer Evaluation</td><td>Q1 2025</td><td>HR Division</td><td>10 Apr 2025</td><td><span class="badge active">Submitted</span></td></tr>
+            <tr><td>May Performance</td><td>May 2025</td><td>—</td><td>Due 31 May</td><td><span class="badge pending">Pending</span></td></tr>
+          </table>
+        </div>
+      </div>`;
+
+    setTimeout(function() {
+      var ctx = document.getElementById('reportChart');
+      if (!ctx) return;
+      new Chart(ctx, {
+        type:'line',
+        data:{
+          labels:['Jan','Feb','Mar','Apr','May','Jun'],
+          datasets:[
+            { label:'Reports Filed',  data:[12,14,11,16,13,15], borderColor:'#FF9933', backgroundColor:'rgba(255,153,51,.07)', borderWidth:2.5, pointBackgroundColor:'#FF9933', pointRadius:4, tension:.4, fill:true },
+            { label:'On-Time', data:[11,13,11,15,12,14], borderColor:'#138808', backgroundColor:'rgba(19,136,8,.07)', borderWidth:2.5, pointBackgroundColor:'#138808', pointRadius:4, tension:.4, fill:true },
+          ]
+        },
+        options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8' } } },
+          scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+      });
+    }, 80);
+  }
+
+  /* ── SETTINGS ── */
+  else if (section === 'settings') {
+    el.innerHTML = `
+      <div class="section-box">
+        <h2>🔧 Account Settings</h2>
+        <p class="sub">Update your officer profile, notifications, and security preferences.</p>
+
+        <div class="set-grid">
+          <div class="info-card">
+            <h4>👤 Officer Profile</h4>
+            <div class="frm-grp"><label>Full Name</label><input type="text" id="nameInput" value="Officer User"/></div>
+            <div class="frm-grp"><label>Employee ID</label><input type="text" value="GVT-OFF-2021-184"/></div>
+            <div class="frm-grp"><label>Designation</label><input type="text" value="District Officer"/></div>
+            <div class="frm-grp"><label>Department</label>
+              <select><option>Revenue</option><option>Civil Supplies</option><option>Health & FW</option><option>Education</option></select>
+            </div>
+            <div class="frm-grp"><label>District</label>
+              <select><option>Krishna</option><option>Guntur</option><option>Vijayawada</option><option>Nellore</option></select>
+            </div>
+          </div>
+          <div class="info-card">
+            <h4>🔔 Notifications</h4>
+            <div class="tog-row"><span>SMS Alerts</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>Email Notifications</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>New Application Alerts</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>Grievance Escalations</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>SLA Breach Warnings</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>System Announcements</span><div class="tog"></div></div>
+          </div>
+          <div class="info-card">
+            <h4>🔒 Security</h4>
+            <div class="frm-grp"><label>Current Password</label><input type="password" value="password"/></div>
+            <div class="frm-grp"><label>New Password</label><input type="password" placeholder="Enter new password"/></div>
+            <div class="frm-grp"><label>Confirm Password</label><input type="password" placeholder="Confirm new password"/></div>
+            <div class="tog-row"><span>Two-Factor Authentication</span><div class="tog on"></div></div>
+            <div class="tog-row"><span>Login Notifications</span><div class="tog on"></div></div>
+          </div>
+        </div>
+        <button class="save-btn" id="saveBtn">💾 Save Changes</button>
+      </div>`;
+
+    document.querySelectorAll('.tog').forEach(function(t){
+      t.addEventListener('click', function(){ this.classList.toggle('on'); });
     });
-
-    // Set the hero name based on email
-    const name = email.split("@")[0];
-    document.getElementById("heroName").textContent =
-      name.charAt(0).toUpperCase() + name.slice(1);
-
-
-    // Close when tapping the dark backdrop (outside the menu content)
-    document.getElementById("navOverlay").addEventListener("click", function(e){
-      if(e.target === this) closeNav();
+    document.getElementById('saveBtn').addEventListener('click', function(){
+      var name = document.getElementById('nameInput').value.trim();
+      if (name) { localStorage.setItem('officerName', name); updateOfficerChip(); }
+      this.textContent = '✅ Saved!';
+      setTimeout(function(){ document.getElementById('saveBtn') && (document.getElementById('saveBtn').textContent = '💾 Save Changes'); }, 2000);
     });
+  }
 
-  </script>
+  setTimeout(initReveal, 60);
+}
 
+/* ══════════════════════════════════════
+   CHART HELPERS
+══════════════════════════════════════ */
+function drawLineChart(id, labels, d1, d2) {
+  setTimeout(function(){
+    var ctx = document.getElementById(id);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[
+          { label:'Applications', data:d1, borderColor:'#FF9933', backgroundColor:'rgba(255,153,51,.07)', borderWidth:2.5, pointBackgroundColor:'#FF9933', pointRadius:4, tension:.4, fill:true },
+          { label:'Approved',     data:d2, borderColor:'#138808', backgroundColor:'rgba(19,136,8,.07)',   borderWidth:2.5, pointBackgroundColor:'#138808', pointRadius:4, tension:.4, fill:true },
+        ]
+      },
+      options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:12} } } },
+        scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+    });
+  }, 80);
+}
+
+function drawProgress(containerId, items) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = items.map(function(it){
+    return '<div class="prog-item"><div class="prog-lbl"><span>'+it.label+'</span><span>'+it.pct+'%</span></div><div class="prog-bar"><div class="prog-fill" data-pct="'+it.pct+'" style="background:'+it.color+'"></div></div></div>';
+  }).join('');
+  setTimeout(function(){
+    el.querySelectorAll('.prog-fill').forEach(function(b){ b.style.width = b.dataset.pct+'%'; });
+  }, 80);
+}
+
+/* ══════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════ */
+function initReveal() {
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold:0.06 });
+  document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+}
+
+/* ══════════════════════════════════════
+   OFFICER CHIP
+══════════════════════════════════════ */
+function updateOfficerChip() {
+  var email = localStorage.getItem('userEmail') || 'officer@gov.in';
+  var name  = localStorage.getItem('officerName') || email.split('@')[0];
+  var cap   = name.charAt(0).toUpperCase() + name.slice(1);
+  document.getElementById('userEmail').textContent = email;
+  document.getElementById('sbName').textContent    = cap;
+  document.getElementById('sbAvatar').textContent  = cap.charAt(0).toUpperCase();
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+updateOfficerChip();
+navigate('dashboard');
+</script>
 </body>
 </html>

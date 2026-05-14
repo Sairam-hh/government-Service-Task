@@ -305,6 +305,8 @@
 </head>
 <body>
 
+    
+
   <!-- Particles -->
 
   <div class="particles">
@@ -370,7 +372,7 @@
           <input
             type="password"
             id="password"
-            placeholder="Enter password"
+            placeholder="Min. 8 characters"
             required
           >
         </div>
@@ -385,7 +387,7 @@
           <input
             type="password"
             id="confirmPassword"
-            placeholder="Confirm password"
+            placeholder="Re-Enter your password"
             required
           >
         </div>
@@ -438,6 +440,13 @@
       document.getElementById("confirmPassword").value;
 
       // Check Passwords
+      if(password.length < 8){
+
+        showToast("Password must be at least 8 characters!");
+
+        return;
+
+      }
 
       if(password !== confirmPassword){
 

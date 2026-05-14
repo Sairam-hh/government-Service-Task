@@ -38,7 +38,6 @@
       position: relative;
     }
 
-    /* ── Animated background orbs ── */
     body::before,
     body::after {
       content: '';
@@ -49,54 +48,81 @@
       pointer-events: none;
       z-index: 0;
     }
+
     body::before {
-      width: 420px; height: 420px;
+      width: 420px;
+      height: 420px;
       background: radial-gradient(circle, rgba(37,99,235,0.25), transparent 70%);
-      top: -100px; left: -80px;
-    }
-    body::after {
-      width: 340px; height: 340px;
-      background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
-      bottom: -80px; right: -60px;
-      animation-delay: -6s; animation-duration: 10s;
-    }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to   { transform: translate(40px, 30px) scale(1.08); }
+      top: -100px;
+      left: -80px;
     }
 
-    /* ── Floating particles ── */
-    .particles {
-      position: fixed; inset: 0;
-      pointer-events: none; z-index: 0; overflow: hidden;
+    body::after {
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
+      bottom: -80px;
+      right: -60px;
+      animation-delay: -6s;
+      animation-duration: 10s;
     }
+
+    @keyframes drift {
+      from {
+        transform: translate(0, 0) scale(1);
+      }
+
+      to {
+        transform: translate(40px, 30px) scale(1.08);
+      }
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
     .particle {
-      position: absolute; border-radius: 50%;
+      position: absolute;
+      border-radius: 50%;
       background: rgba(147,197,253,0.18);
       animation: floatUp linear infinite;
     }
-    .particle:nth-child(1){ width:4px; height:4px; left:10%; animation-duration:14s; animation-delay:0s;  }
-    .particle:nth-child(2){ width:6px; height:6px; left:22%; animation-duration:18s; animation-delay:2s;  }
-    .particle:nth-child(3){ width:3px; height:3px; left:38%; animation-duration:12s; animation-delay:5s;  }
-    .particle:nth-child(4){ width:5px; height:5px; left:54%; animation-duration:16s; animation-delay:1s;  }
-    .particle:nth-child(5){ width:4px; height:4px; left:70%; animation-duration:20s; animation-delay:7s;  }
-    .particle:nth-child(6){ width:7px; height:7px; left:85%; animation-duration:15s; animation-delay:3s;  }
-    .particle:nth-child(7){ width:3px; height:3px; left:92%; animation-duration:11s; animation-delay:9s;  }
+
+    .particle:nth-child(1){ width:4px; height:4px; left:10%; animation-duration:14s; }
+    .particle:nth-child(2){ width:6px; height:6px; left:22%; animation-duration:18s; }
+    .particle:nth-child(3){ width:3px; height:3px; left:38%; animation-duration:12s; }
+    .particle:nth-child(4){ width:5px; height:5px; left:54%; animation-duration:16s; }
+    .particle:nth-child(5){ width:4px; height:4px; left:70%; animation-duration:20s; }
+    .particle:nth-child(6){ width:7px; height:7px; left:85%; animation-duration:15s; }
+    .particle:nth-child(7){ width:3px; height:3px; left:92%; animation-duration:11s; }
+
     @keyframes floatUp {
-      0%   { transform: translateY(110vh) scale(0.8); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+      0% {
+        transform: translateY(110vh) scale(0.8);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: translateY(-10vh) scale(1.2);
+        opacity: 0;
+      }
     }
 
-    /* ══════════════════════════════
-       PAGE WRAPPER
-       — flex container that fills the full viewport
-       — centres the card on tablet/desktop
-       — on mobile the card itself fills 100dvh
-    ══════════════════════════════ */
     .page-wrap {
-      position: relative; z-index: 10;
+      position: relative;
+      z-index: 10;
       width: 100%;
       min-height: 100vh;
       min-height: 100dvh;
@@ -106,92 +132,78 @@
       padding: 32px 16px;
     }
 
-    /* ── Card ── */
     .login-container {
       position: relative;
       width: 100%;
       max-width: 500px;
       background: rgba(5,24,44,0.92);
       backdrop-filter: blur(24px) saturate(1.3);
-      -webkit-backdrop-filter: blur(24px) saturate(1.3);
       padding: clamp(32px,6vw,56px) clamp(28px,6vw,48px);
       border-radius: 30px;
       border: 1px solid rgba(255,255,255,0.10);
       box-shadow: 0 32px 90px rgba(0,0,0,0.45);
-      animation: cardIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
     }
 
-    @keyframes cardIn {
-      from { opacity:0; transform:translateY(48px) scale(0.96); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
-    }
-
-    /* top accent line */
-    .login-container::before {
-      content: '';
-      position: absolute; top:0; left:10%; right:10%; height:2px;
-      background: linear-gradient(90deg,transparent,#3b82f6,#818cf8,transparent);
-      border-radius: 0 0 4px 4px;
-    }
-
-    /* ── Header ── */
     .card-header {
       text-align: center;
       margin-bottom: 36px;
     }
 
     .logo-ring {
-      display: inline-flex; align-items:center; justify-content:center;
-      width:60px; height:60px; border-radius:18px;
+      display: inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:60px;
+      height:60px;
+      border-radius:18px;
       background: linear-gradient(135deg,#1d4ed8,#4f46e5);
-      box-shadow: 0 8px 24px rgba(37,99,235,0.5);
       margin-bottom:18px;
-      animation: logoIn 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;
     }
-    @keyframes logoIn {
-      from { opacity:0; transform:scale(0.6) rotate(-10deg); }
-      to   { opacity:1; transform:scale(1) rotate(0deg); }
-    }
+
     .logo-ring svg {
-      width:28px; height:28px; fill:none;
-      stroke:#fff; stroke-width:2;
-      stroke-linecap:round; stroke-linejoin:round;
+      width:28px;
+      height:28px;
+      fill:none;
+      stroke:#fff;
+      stroke-width:2;
     }
 
     .card-header h2 {
-      font-size: clamp(22px,4vw,30px);
-      font-weight:700; letter-spacing:-0.5px;
-      animation: fadeUp 0.6s 0.4s both;
-    }
-    .card-header p {
-      font-size:14px; color:rgba(241,245,249,0.78);
-      margin-top:8px; line-height:1.75;
-      animation: fadeUp 0.6s 0.5s both;
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(12px); }
-      to   { opacity:1; transform:translateY(0); }
+      font-size: 30px;
+      font-weight:700;
     }
 
-    /* ── Fields ── */
-    .field { margin-bottom:20px; animation:fadeUp 0.6s both; }
-    .field:nth-child(1){ animation-delay:0.55s; }
-    .field:nth-child(2){ animation-delay:0.65s; }
-    .field:nth-child(3){ animation-delay:0.75s; }
+    .card-header p {
+      font-size:14px;
+      color:rgba(241,245,249,0.78);
+      margin-top:8px;
+    }
+
+    .field {
+      margin-bottom:20px;
+    }
 
     .field label {
-      display:block; font-size:12px; font-weight:600;
-      letter-spacing:0.08em; text-transform:uppercase;
-      color:var(--label); margin-bottom:8px;
+      display:block;
+      font-size:12px;
+      font-weight:600;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--label);
+      margin-bottom:8px;
     }
 
-    .input-wrap { position:relative; }
+    .input-wrap {
+      position:relative;
+    }
 
     .input-wrap .icon {
-      position:absolute; left:16px; top:50%;
+      position:absolute;
+      left:16px;
+      top:50%;
       transform:translateY(-50%);
-      color:var(--text-muted); pointer-events:none;
-      transition:color 0.3s; display:flex;
+      color:var(--text-muted);
+      display:flex;
     }
 
     .input-wrap select,
@@ -201,195 +213,129 @@
       background:var(--input-bg);
       border:1px solid var(--input-border);
       border-radius:var(--radius);
-      font-size:15px; font-family:'Sora',sans-serif;
+      font-size:15px;
+      font-family:'Sora',sans-serif;
       color:var(--text-primary);
-      transition:border-color 0.3s,box-shadow 0.3s,background 0.3s;
-      appearance:none; -webkit-appearance:none;
+      appearance:none;
     }
 
-    .input-wrap select option { background:#1e293b; color:var(--text-primary); }
-
-    .input-wrap select:focus,
-    .input-wrap input:focus {
+    .input-wrap input:focus,
+    .input-wrap select:focus {
       outline:none;
       border-color:var(--primary);
-      background:rgba(37,99,235,0.08);
       box-shadow:0 0 0 4px var(--primary-glow);
     }
 
-    .input-wrap:focus-within .icon { color:#60a5fa; }
-
     .select-arrow {
-      position:absolute; right:16px; top:50%;
+      position:absolute;
+      right:16px;
+      top:50%;
       transform:translateY(-50%);
-      pointer-events:none; color:var(--text-muted);
+      color:var(--text-muted);
     }
 
     .pw-toggle {
-      position:absolute; right:14px; top:50%;
+      position:absolute;
+      right:14px;
+      top:50%;
       transform:translateY(-50%);
-      background:none; border:none; cursor:pointer;
-      color:var(--text-muted); padding:4px;
-      display:flex; align-items:center;
-      transition:color 0.2s; width:auto;
-    }
-    .pw-toggle:hover {
-      color:#60a5fa;
-      transform:translateY(-50%);
-      box-shadow:none; background:none;
+      background:none;
+      border:none;
+      cursor:pointer;
+      color:var(--text-muted);
     }
 
-    /* ── Submit ── */
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: -4px;
+      margin-bottom: 20px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2563eb;
+      cursor: pointer;
+    }
+
+    .forgot-password {
+      color: #60a5fa;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .forgot-password:hover {
+      color: #93c5fd;
+    }
+
     .btn-submit {
-      width:100%; padding:16px 0; border:none;
+      width:100%;
+      padding:16px 0;
+      border:none;
       border-radius:var(--radius);
       background:linear-gradient(135deg,#2563eb,#4f46e5);
-      color:#fff; font-size:16px; font-family:'Sora',sans-serif;
-      font-weight:700; cursor:pointer; letter-spacing:0.06em;
-      position:relative; overflow:hidden;
-      transition:transform 0.25s,box-shadow 0.25s;
-      box-shadow:0 10px 32px rgba(37,99,235,0.35);
+      color:#fff;
+      font-size:16px;
+      font-family:'Sora',sans-serif;
+      font-weight:700;
+      cursor:pointer;
       margin-top:8px;
-      animation:fadeUp 0.6s 0.85s both;
     }
-    .btn-submit::before {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(135deg,#3b82f6,#818cf8);
-      opacity:0; transition:opacity 0.3s;
-    }
-    .btn-submit:hover { transform:translateY(-3px); box-shadow:0 12px 36px rgba(37,99,235,0.55); }
-    .btn-submit:hover::before { opacity:1; }
-    .btn-submit:active { transform:translateY(0); }
 
     .btn-submit span {
-      position:relative; z-index:1;
-      display:flex; align-items:center; justify-content:center; gap:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
 
-    .ripple {
-      position:absolute; border-radius:50%;
-      background:rgba(255,255,255,0.3);
-      transform:scale(0);
-      animation:rippleAnim 0.6s linear;
-      pointer-events:none;
-    }
-    @keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
-
-    /* ── Divider ── */
     .divider {
-      display:flex; align-items:center; gap:12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
       margin:24px 0 20px;
-      animation:fadeUp 0.6s 0.9s both;
     }
-    .divider::before,.divider::after {
-      content:''; flex:1; height:1px; background:var(--input-border);
-    }
-    .divider span { font-size:12px; color:var(--text-muted); white-space:nowrap; }
 
-    /* ── Signup text ── */
-    .signup-text {
-      text-align:center; font-size:14px;
+    .divider::before,
+    .divider::after {
+      content:'';
+      flex:1;
+      height:1px;
+      background:var(--input-border);
+    }
+
+    .divider span {
+      font-size:12px;
       color:var(--text-muted);
-      animation:fadeUp 0.6s 0.95s both;
     }
+
+    .signup-text {
+      text-align:center;
+      font-size:14px;
+      color:var(--text-muted);
+    }
+
     .signup-text a {
-      color:#60a5fa; font-weight:600; text-decoration:none;
-      position:relative; transition:color 0.2s;
-    }
-    .signup-text a::after {
-      content:''; position:absolute;
-      bottom:-2px; left:0; right:0; height:1px;
-      background:#60a5fa; transform:scaleX(0);
-      transition:transform 0.25s;
-    }
-    .signup-text a:hover { color:#93c5fd; }
-    .signup-text a:hover::after { transform:scaleX(1); }
-
-    /* ── Toast ── */
-    .toast {
-      position:fixed; top:24px; left:50%;
-      transform:translateX(-50%) translateY(-80px);
-      background:#1e293b; border:1px solid #ef4444;
-      color:#fca5a5; padding:12px 24px; border-radius:12px;
-      font-size:14px; font-family:'Sora',sans-serif;
-      box-shadow:0 8px 32px rgba(0,0,0,0.5);
-      transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
-      z-index:999; white-space:nowrap;
-    }
-    .toast.show { transform:translateX(-50%) translateY(0); }
-
-    ::placeholder { color:rgba(148,163,184,0.5); }
-
-    /* ══════════════════════════════
-       RESPONSIVE
-    ══════════════════════════════ */
-
-    /* Tablet (481px – 768px) — centred floating card */
-    @media (max-width:768px) {
-      .page-wrap { padding:24px 20px; }
-      .login-container { border-radius:24px; padding:32px 24px; }
-      .card-header { margin-bottom:28px; }
-      .card-header h2 { font-size:22px; }
-      .input-wrap input,
-      .input-wrap select { font-size:15px; }
-    }
-
-    /* Mobile (≤480px) — full-screen edge-to-edge card */
-    @media (max-width:480px) {
-      .page-wrap {
-        padding: 0;
-        align-items: stretch;          /* stretch vertically */
-      }
-
-      .login-container {
-        max-width: 100%;
-        min-height: 100vh;
-        min-height: 100dvh;            /* fill exact viewport height */
-        border-radius: 0;              /* edge-to-edge, no rounded corners */
-        border: none;
-        box-shadow: none;
-        padding: 56px 24px 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;       /* form is vertically centred */
-      }
-
-      /* hide the accent line on full-screen card */
-      .login-container::before { display:none; }
-
-      .card-header { margin-bottom:32px; }
-      .card-header h2 { font-size:26px; }
-      .card-header p  { font-size:14px; }
-
-      .logo-ring { width:56px; height:56px; margin-bottom:16px; }
-
-      .field { margin-bottom:18px; }
-
-      /* font-size 16px prevents iOS Safari auto-zoom on focus */
-      .input-wrap input,
-      .input-wrap select { font-size:16px; padding:14px 14px 14px 46px; }
-
-      .btn-submit { padding:16px 0; font-size:16px; }
-
-      .signup-text { font-size:14px; }
-
-      .toast {
-        width: calc(100% - 32px);
-        white-space: normal;
-        text-align: center;
-      }
-    }
-
-    /* Laptop & up */
-    @media (min-width:1025px) {
-      .login-container { max-width:500px; }
+      color:#60a5fa;
+      text-decoration:none;
+      font-weight:600;
     }
 
   </style>
 </head>
+
 <body>
 
-  <!-- Floating particles -->
   <div class="particles">
     <div class="particle"></div>
     <div class="particle"></div>
@@ -400,12 +346,12 @@
     <div class="particle"></div>
   </div>
 
-  <div class="toast" id="toast">Please select a role</div>
-
   <div class="page-wrap">
+
     <div class="login-container">
 
       <div class="card-header">
+
         <div class="logo-ring">
           <svg viewBox="0 0 24 24">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -413,85 +359,111 @@
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
+
         <h2>Welcome Back</h2>
         <p>Sign in to continue to your dashboard</p>
+
       </div>
 
       <form id="loginForm">
 
         <!-- Role -->
+
         <div class="field">
           <label for="role">Your Role</label>
+
           <div class="input-wrap">
+
             <span class="icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </span>
+
             <select name="role" id="role" required>
               <option value="">Select Role</option>
               <option value="citizen">Citizen</option>
               <option value="officer">Officer</option>
             </select>
+
             <span class="select-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
+              ▼
             </span>
+
           </div>
         </div>
 
         <!-- Email -->
+
         <div class="field">
+
           <label for="email">Email Address</label>
+
           <div class="input-wrap">
+
             <span class="icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
+              ✉
             </span>
-            <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
+
+            <input type="email" id="email" placeholder="Enter your email" required>
+
           </div>
+
         </div>
 
         <!-- Password -->
+
         <div class="field">
+
           <label for="password">Password</label>
+
           <div class="input-wrap">
+
             <span class="icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+              🔒
             </span>
-            <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
-            <button type="button" class="pw-toggle" id="pwToggle" aria-label="Toggle password visibility">
-              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+
+            <input type="password" id="password" placeholder="Enter your password" required>
+
+            <button type="button" class="pw-toggle" id="pwToggle">
+              👁
             </button>
+
           </div>
+
         </div>
 
+        <!-- Remember + Forgot -->
+
+        <div class="remember-forgot">
+
+          <label class="remember-me">
+            <input type="checkbox">
+            Remember Me
+          </label>
+
+          <a href="signup.html" class="forgot-password">
+            Forgot Password?
+          </a>
+
+        </div>
+
+        <!-- Button -->
+
         <button type="submit" class="btn-submit">
+
           <span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-              <polyline points="10 17 15 12 10 7"/>
-              <line x1="15" y1="12" x2="3" y2="12"/>
-            </svg>
             Sign In
           </span>
+
         </button>
 
       </form>
 
-      <div class="divider"><span>New here?</span></div>
+      <div class="divider">
+        <span>New here?</span>
+      </div>
 
       <p class="signup-text">
         Don't have an account?
@@ -499,65 +471,49 @@
       </p>
 
     </div>
+
   </div>
 
   <script>
 
-    // ── Password toggle ──
     const pwToggle = document.getElementById('pwToggle');
-    const pwInput  = document.getElementById('password');
-    const eyeIcon  = document.getElementById('eyeIcon');
-
-    const eyeOpen   = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-    const eyeClosed = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+    const password = document.getElementById('password');
 
     pwToggle.addEventListener('click', () => {
-      const isHidden = pwInput.type === 'password';
-      pwInput.type = isHidden ? 'text' : 'password';
-      eyeIcon.innerHTML = isHidden ? eyeClosed : eyeOpen;
+
+      if(password.type === 'password') {
+        password.type = 'text';
+        pwToggle.innerHTML = '🙈';
+      } else {
+        password.type = 'password';
+        pwToggle.innerHTML = '👁';
+      }
+
     });
 
-    // ── Ripple effect on button ──
-    document.querySelector('.btn-submit').addEventListener('click', function(e) {
-      const btn = this;
-      const ripple = document.createElement('span');
-      const rect = btn.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
-      ripple.classList.add('ripple');
-      btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 700);
-    });
-
-    // ── Toast helper ──
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2800);
-    }
-
-    // ── Form submit (original logic preserved) ──
     document.getElementById("loginForm")
-      .addEventListener("submit", function(e) {
+    .addEventListener("submit", function(e){
 
-        e.preventDefault();
+      e.preventDefault();
 
-        let role  = document.getElementById("role").value;
-        let email = document.getElementById("email").value;
+      let role = document.getElementById("role").value;
+      let email = document.getElementById("email").value;
 
-        // Store email
-        localStorage.setItem("userEmail", email);
+      localStorage.setItem("userEmail", email);
 
-        if (role === "citizen") {
-          window.location.href = "citizenDashboard.html";
-        } else if (role === "officer") {
-          window.location.href = "officerDashboard.html";
-        } else {
-          showToast("Please select a role to continue");
-        }
+      if(role === "citizen") {
+        window.location.href = "citizenDashboard.html";
+      }
 
-      });
+      else if(role === "officer") {
+        window.location.href = "officerDashboard.html";
+      }
+
+      else {
+        alert("Please select role");
+      }
+
+    });
 
   </script>
 
