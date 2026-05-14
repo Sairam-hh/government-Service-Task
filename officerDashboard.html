@@ -816,7 +816,9 @@
 
   <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
   <section class="hero">
-    <h1>Welcome Officer</h1>
+    <!-- <h1>Welcome Officer</h1> -->
+    <h1>Welcome back,<br><span class="name-highlight" id="heroName">Citizen</span></h1>
+
     <p>
       Manage citizen requests, verify applications,
       approve services, and monitor government
@@ -1017,6 +1019,12 @@
     document.addEventListener("keydown", function(e){
       if(e.key === "Escape") closeNav();
     });
+
+    // Set the hero name based on email
+    const name = email.split("@")[0];
+    document.getElementById("heroName").textContent =
+      name.charAt(0).toUpperCase() + name.slice(1);
+
 
     // Close when tapping the dark backdrop (outside the menu content)
     document.getElementById("navOverlay").addEventListener("click", function(e){
