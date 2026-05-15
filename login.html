@@ -177,7 +177,7 @@
     } */
      .select-wrap select {
      display: none;
-     }
+}
 
     /* Visible styled face */
     .select-face {
@@ -574,16 +574,31 @@
 
     /* ── Form submit ── */
     document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var role  = nativeSelect.value;
-      var email = document.getElementById('email').value;
+  e.preventDefault();
 
-      localStorage.setItem('userEmail', email);
+  var role  = nativeSelect.value;
+  var email = document.getElementById('email');
 
-      if (role === 'citizen')      { window.location.href = 'citizenDashboard.html'; }
-      else if (role === 'officer') { window.location.href = 'officerDashboard.html'; }
-      else                         { alert('Please select a role'); }
-    });
+  // Email validation
+  if (!email.checkValidity()) {
+    alert('Please enter a valid email address');
+    email.focus();
+    return;
+  }
+
+  localStorage.setItem('userEmail', email.value);
+
+  if (role === 'citizen') {
+    window.location.href = 'citizenDashboard.html';
+  }
+  else if (role === 'officer') {
+    window.location.href = 'officerDashboard.html';
+  }
+  else {
+    alert('Please select a role');
+  }
+});
+    //});
   </script>
 
 </body>
