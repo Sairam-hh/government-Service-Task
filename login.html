@@ -390,7 +390,7 @@
           <div class="select-wrap" id="selectWrap">
 
             <!-- Invisible native select keeps form submit working -->
-            <select name="role" id="role" required tabindex="-1" aria-hidden="true">
+            <select name="role" id="role"  tabindex="-1" aria-hidden="true">
               <option value="">Select Role</option>
               <option value="citizen">Citizen</option>
               <option value="officer">Officer</option>
@@ -433,8 +433,9 @@
                 </svg>
                 Officer
               </div>
-
             </div>
+            <!-- Error message for role selection -->
+            <p id="roleError" style="color:red; font-size:13px; margin-top:6px;"></p>
           </div>
         </div>
 
@@ -450,9 +451,10 @@
               </svg>
             </span>
             <input
-             type="email"
+             type="text"
              id="email" 
-             placeholder="Enter your email" 
+             placeholder="Enter your email"
+             required 
              
              >
           </div>
@@ -516,8 +518,14 @@
     const selectFace   = document.getElementById('selectFace');
     const selectText   = document.getElementById('selectText');
     const customOptions = document.getElementById('customOptions');
+    // const nativeSelect  = document.getElementById('role');
+    // const options       = customOptions.querySelectorAll('.custom-option');
     const nativeSelect  = document.getElementById('role');
     const options       = customOptions.querySelectorAll('.custom-option');
+
+    /* Reset role on page load */
+    nativeSelect.value = '';
+    selectText.textContent = 'Select Role';
 
     function openDropdown() {
       customOptions.classList.add('open');
@@ -551,6 +559,7 @@
         // update face
         selectText.textContent = label;
         selectFace.classList.add('selected');
+        document.getElementById('roleError').textContent = '';
 
         // mark active
         options.forEach(function(o) { o.classList.remove('active'); });
@@ -569,12 +578,14 @@
     /* ── Password toggle ── */
     const pwToggle = document.getElementById('pwToggle');
     const pwInput  = document.getElementById('password');
+    
 
     pwToggle.addEventListener('click', function() {
       var hidden = pwInput.type === 'password';
       pwInput.type = hidden ? 'text' : 'password';
       pwToggle.classList.toggle('visible', hidden);
       pwToggle.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+      
     });
 
     /* ── Form submit ── */
@@ -585,11 +596,16 @@
   var email = document.getElementById('email');
 
   // Email validation
-  if (!email.checkValidity()) {
-    alert('Please enter a valid email address');
-    email.focus();
-    return;
-  }
+  const emailValue = email.value;
+
+if (
+  !emailValue.includes('@') ||
+  !emailValue.includes('.', emailValue.indexOf('@'))
+) {
+  alert('Please enter valid email');
+  email.focus();
+  return;
+}
 
   localStorage.setItem('userEmail', email.value);
 
@@ -600,8 +616,10 @@
     window.location.href = 'officerDashboard.html';
   }
   else {
-    alert('Please select a role');
-  }
+  document.getElementById('roleError').textContent =
+  'Please select a role';
+}
+
 });
     //});
   </script>
