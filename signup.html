@@ -28,22 +28,28 @@
       font-family:'Sora',sans-serif;
     }
 
+    /* ── FIX: Remove overflow:hidden so mobile can scroll vertically.
+              Use overflow-x:hidden to block horizontal scroll only. ── */
+    html{
+      overflow-x:hidden;
+    }
+
     body{
       display:flex;
       justify-content:center;
       align-items:center;
       min-height:100vh;
       background:
-      radial-gradient(circle at top left,#1d4ed8 0%,transparent 35%),
-      radial-gradient(circle at bottom right,#4338ca 0%,transparent 35%),
-      #0f172a;
-      overflow:hidden;
+        radial-gradient(circle at top left,#1d4ed8 0%,transparent 35%),
+        radial-gradient(circle at bottom right,#4338ca 0%,transparent 35%),
+        #0f172a;
+      /* FIX: was overflow:hidden — caused clipping & horizontal scroll on mobile */
+      overflow-x:hidden;
       position:relative;
       padding:20px;
     }
 
     /* Background Orbs */
-
     body::before,
     body::after{
       content:"";
@@ -51,46 +57,37 @@
       border-radius:50%;
       filter:blur(90px);
       animation:move 8s infinite alternate ease-in-out;
+      /* FIX: pointer-events none so orbs don't interfere with touch */
+      pointer-events:none;
     }
 
     body::before{
-      width:300px;
-      height:300px;
+      width:300px; height:300px;
       background:rgba(37,99,235,0.3);
-      top:-80px;
-      left:-60px;
+      top:-80px; left:-60px;
     }
 
     body::after{
-      width:250px;
-      height:250px;
+      width:250px; height:250px;
       background:rgba(99,102,241,0.25);
-      bottom:-80px;
-      right:-50px;
+      bottom:-80px; right:-50px;
     }
 
     @keyframes move{
-      from{
-        transform:translateY(0px);
-      }
-      to{
-        transform:translateY(40px);
-      }
+      from{ transform:translateY(0px); }
+      to{   transform:translateY(40px); }
     }
 
     /* Particles */
-
     .particles{
-      position:absolute;
-      inset:0;
-      overflow:hidden;
-      z-index:0;
+      position:fixed; inset:0;
+      overflow:hidden; z-index:0;
+      pointer-events:none;
     }
 
     .particle{
       position:absolute;
-      width:6px;
-      height:6px;
+      width:6px; height:6px;
       background:rgba(255,255,255,0.15);
       border-radius:50%;
       animation:float 15s linear infinite;
@@ -104,22 +101,17 @@
     .particle:nth-child(6){ left:90%; animation-duration:13s; }
 
     @keyframes float{
-      from{
-        transform:translateY(100vh);
-        opacity:0;
-      }
-      to{
-        transform:translateY(-10vh);
-        opacity:1;
-      }
+      from{ transform:translateY(100vh); opacity:0; }
+      to{   transform:translateY(-10vh);  opacity:1; }
     }
 
     /* Signup Card */
-
     .signup-container{
-      position:relative;
-      z-index:2;
-      width:min(900px,100%);
+      position:relative; z-index:2;
+      /* FIX: Use 100% width with a max-width cap instead of min() alone,
+              and let it shrink naturally on narrow viewports */
+      width:100%;
+      max-width:900px;
       border-radius:24px;
       background:var(--card-bg);
       -webkit-backdrop-filter:blur(25px);
@@ -138,96 +130,70 @@
     }
 
     .signup-image-panel{
-      display:flex;
-      flex-direction:column;
-      gap:24px;
-      align-items:flex-start;
+      display:flex; flex-direction:column;
+      gap:24px; align-items:flex-start;
     }
 
     .signup-image-panel img{
-      width:100%;
-      height:auto;
-      border-radius:24px;
-      object-fit:cover;
+      width:100%; height:auto;
+      border-radius:24px; object-fit:cover;
       box-shadow:0 24px 70px rgba(15,23,42,0.25);
     }
 
     .visual-copy h3{
-      color:#eef2ff;
-      font-size:28px;
-      line-height:1.2;
-      margin:0;
+      color:#eef2ff; font-size:28px; line-height:1.2; margin:0;
     }
 
     .visual-copy p{
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.8;
-      max-width:520px;
+      color:var(--muted); font-size:15px; line-height:1.8; max-width:520px;
     }
 
-    .signup-form-panel{
-      width:100%;
-    }
+    .signup-form-panel{ width:100%; }
 
     @keyframes cardShow{
-      from{
-        opacity:0;
-        transform:translateY(40px) scale(0.95);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0) scale(1);
-      }
+      from{ opacity:0; transform:translateY(40px) scale(0.95); }
+      to{   opacity:1; transform:translateY(0) scale(1); }
     }
 
     /* Header */
-
     .signup-header{
-      text-align:center;
-      margin-bottom:35px;
+      text-align:center; margin-bottom:35px;
     }
 
     .signup-header h2{
-      color:var(--text);
-      font-size:32px;
-      margin-bottom:8px;
+      color:var(--text); font-size:32px; margin-bottom:8px;
     }
 
     .signup-header p{
-      color:var(--muted);
-      font-size:14px;
+      color:var(--muted); font-size:14px;
     }
 
-    /* Inputs */
-
-    .field{
-      margin-bottom:20px;
-    }
+    /* Fields */
+    .field{ margin-bottom:20px; }
 
     .field label{
-      display:block;
-      margin-bottom:8px;
-      color:#cbd5e1;
-      font-size:13px;
-      font-weight:600;
+      display:block; margin-bottom:8px;
+      color:#cbd5e1; font-size:13px; font-weight:600;
     }
 
-    .input-box{
-      position:relative;
-    }
+    /* ── Input wrapper ── */
+    .input-box{ position:relative; }
 
     .input-box input{
       width:100%;
       padding:14px 16px;
-      border:none;
+      border:1px solid rgba(255,255,255,0.08);
       outline:none;
       border-radius:14px;
       background:var(--input-bg);
-      border:1px solid rgba(255,255,255,0.08);
       color:var(--text);
       font-size:15px;
       transition:0.3s;
+    }
+
+    /* extra right padding only when there's an icon */
+    .input-box.has-icon input{
+      padding-right: 48px;
     }
 
     .input-box input:focus{
@@ -236,23 +202,84 @@
       background:rgba(37,99,235,0.08);
     }
 
-    ::placeholder{
-      color:#94a3b8;
+    ::placeholder{ color:#94a3b8; }
+
+    /* ── Eye / Lock icon button ── */
+    .input-icon{
+      position:absolute;
+      right:14px;
+      top:50%;
+      transform:translateY(-50%);
+      background:none;
+      border:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px;
+      color:var(--muted);
+      transition:color 0.2s;
+      line-height:1;
+      outline:none;
+    }
+
+    .input-icon:hover{ color:#e2e8f0; }
+
+    .input-icon svg{
+      width:20px; height:20px;
+      pointer-events:none;
+      display:block;
+    }
+
+    /* hide the "eye-off" path by default; show when toggled */
+    .input-icon .eye-off-icon{ display:none; }
+    .input-icon.visible .eye-icon    { display:none; }
+    .input-icon.visible .eye-off-icon{ display:block; }
+
+    /* lock icon on the left side of password label */
+    .label-with-icon{
+      display:flex; align-items:center; gap:6px;
+      margin-bottom:8px;
+    }
+
+    .label-with-icon svg{
+      width:14px; height:14px;
+      color:#94a3b8; flex-shrink:0;
+    }
+
+    .label-with-icon span{
+      color:#cbd5e1; font-size:13px; font-weight:600;
+    }
+
+    /* ── Strength bar (password only) ── */
+    .strength-wrap{
+      margin-top:7px; display:none;
+    }
+
+    .strength-wrap.show{ display:block; }
+
+    .strength-bar{
+      height:4px; border-radius:999px;
+      background:rgba(255,255,255,0.08);
+      overflow:hidden; margin-bottom:4px;
+    }
+
+    .strength-fill{
+      height:100%; border-radius:999px;
+      width:0; transition:width .35s ease, background .35s ease;
+    }
+
+    .strength-label{
+      font-size:11px; color:var(--muted);
     }
 
     /* Button */
-
     .signup-btn{
-      width:100%;
-      padding:15px;
-      border:none;
-      border-radius:14px;
+      width:100%; padding:15px;
+      border:none; border-radius:14px;
       background:linear-gradient(135deg,#2563eb,#4f46e5);
-      color:white;
-      font-size:16px;
-      font-weight:600;
-      cursor:pointer;
-      transition:0.3s;
+      color:white; font-size:16px; font-weight:600;
+      cursor:pointer; transition:0.3s;
       margin-top:10px;
       box-shadow:0 8px 25px rgba(37,99,235,0.4);
     }
@@ -262,107 +289,125 @@
       box-shadow:0 15px 35px rgba(37,99,235,0.5);
     }
 
-    /* Login Text */
-
+    /* Login link */
     .login-text{
-      text-align:center;
-      margin-top:25px;
-      color:var(--muted);
-      font-size:14px;
+      text-align:center; margin-top:25px;
+      color:var(--muted); font-size:14px;
     }
 
     .login-text a{
-      color:#60a5fa;
-      text-decoration:none;
-      font-weight:600;
-      transition:0.3s;
+      color:#60a5fa; text-decoration:none;
+      font-weight:600; transition:0.3s;
     }
 
-    .login-text a:hover{
-      color:#93c5fd;
-    }
+    .login-text a:hover{ color:#93c5fd; }
 
     /* Toast */
-
     .toast{
-      position:fixed;
-      top:20px;
-      left:50%;
+      position:fixed; top:20px; left:50%;
       transform:translateX(-50%) translateY(-80px);
-      background:#1e293b;
-      color:#fca5a5;
+      background:#1e293b; color:#fca5a5;
       border:1px solid #ef4444;
-      padding:12px 24px;
-      border-radius:12px;
-      transition:0.4s;
-      z-index:999;
+      padding:12px 24px; border-radius:12px;
+      transition:0.4s; z-index:999;
+      /* FIX: Prevent toast from causing horizontal overflow */
+      max-width:calc(100vw - 40px);
+      white-space:nowrap;
     }
 
-    .toast.show{
-      transform:translateX(-50%) translateY(0);
+    .toast.success{
+      color:#86efac; border-color:#22c55e;
     }
 
-    /* Tablet */
+    .toast.show{ transform:translateX(-50%) translateY(0); }
 
+    /* ── TABLET (≤992px) ── */
     @media(max-width:992px){
-
-      .signup-container{
-        width:90%;
-      }
-
       .signup-card{
         grid-template-columns:1fr;
         padding:40px 32px;
       }
-
     }
 
-    /* Mobile */
-
+    /* ── MOBILE (≤768px) ── */
     @media(max-width:768px){
+      body{
+        /* FIX: allow vertical scroll, align to top so content isn't clipped */
+        align-items:flex-start;
+        padding:16px;
+      }
+
+      .signup-container{
+        /* FIX: full width minus padding so it never overflows viewport */
+        width:100%;
+        border-radius:20px;
+        /* top/bottom margin for breathing room */
+        margin:8px 0;
+      }
 
       .signup-card{
-        padding:35px 25px;
-        gap:26px;
+        grid-template-columns:1fr;
+        padding:28px 20px;
+        gap:20px;
+      }
+
+      /* FIX: hide the image panel on mobile to save space & avoid overflow */
+      .signup-image-panel{
+        display:none;
+      }
+
+      /* FIX: "Create Account" heading was overflowing — tighten it */
+      .signup-header{
+        margin-bottom:24px;
       }
 
       .signup-header h2{
-        font-size:28px;
+        font-size:22px;       /* was 32px — too wide for ~320–375px screens */
+        line-height:1.25;
+        margin-bottom:6px;
       }
 
-      .visual-copy h3{
-        font-size:24px;
+      .signup-header p{
+        font-size:13px;
       }
 
+      .visual-copy h3{ font-size:22px; }
+
+      .input-box input{
+        font-size:14px;
+        padding:12px 14px;
+      }
+
+      .input-box.has-icon input{
+        padding-right:44px;
+      }
+
+      .signup-btn{
+        font-size:15px;
+        padding:14px;
+      }
+
+      .field{
+        margin-bottom:16px;
+      }
     }
 
-    /* Small Mobile */
-
+    /* ── SMALL MOBILE (≤480px) ── */
     @media(max-width:480px){
+      body{ padding:12px; }
 
-      .signup-card{
-        padding:28px 20px;
-      }
+      .signup-card{ padding:24px 16px; }
 
       .signup-header h2{
-        font-size:24px;
-      }
-
-      .visual-copy h3{
         font-size:20px;
       }
-
     }
 
   </style>
-
 </head>
 <body>
 
-    
-
   <!-- Particles -->
-
   <div class="particles">
     <div class="particle"></div>
     <div class="particle"></div>
@@ -373,15 +418,13 @@
   </div>
 
   <!-- Toast -->
-
-  <div class="toast" id="toast">
-    Passwords do not match!
-  </div>
+  <div class="toast" id="toast">Passwords do not match!</div>
 
   <!-- Signup Card -->
-
   <div class="signup-container">
     <div class="signup-card">
+
+      <!-- Left panel -->
       <div class="signup-image-panel">
         <img src="signup-image.svg" alt="GovServe signup illustration">
         <div class="visual-copy">
@@ -390,6 +433,7 @@
         </div>
       </div>
 
+      <!-- Right form panel -->
       <div class="signup-form-panel">
         <div class="signup-header">
           <h2>Create Account</h2>
@@ -398,140 +442,192 @@
 
         <form id="signupForm">
 
-          <!-- Name -->
-
+          <!-- Full Name -->
           <div class="field">
             <label>Full Name</label>
-
             <div class="input-box">
-              <input
-                type="text"
-                placeholder="Enter your name"
-                required
-              >
+              <input type="text" placeholder="Enter your name" required>
             </div>
           </div>
 
           <!-- Email -->
-
           <div class="field">
             <label>Email Address</label>
-
             <div class="input-box">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                required
-              >
+              <input type="email" placeholder="Enter your email" required>
             </div>
           </div>
 
           <!-- Password -->
-
           <div class="field">
-            <label>Password</label>
+            <div class="label-with-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>Password</span>
+            </div>
 
-            <div class="input-box">
+            <div class="input-box has-icon">
               <input
                 type="password"
                 id="password"
                 placeholder="Min. 8 characters"
                 required
+                autocomplete="new-password"
               >
+              <button type="button" class="input-icon" id="togglePassword" aria-label="Toggle password visibility">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="strength-wrap" id="strengthWrap">
+              <div class="strength-bar">
+                <div class="strength-fill" id="strengthFill"></div>
+              </div>
+              <div class="strength-label" id="strengthLabel"></div>
             </div>
           </div>
 
           <!-- Confirm Password -->
-
           <div class="field">
-            <label>Confirm Password</label>
+            <div class="label-with-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>Confirm Password</span>
+            </div>
 
-            <div class="input-box">
+            <div class="input-box has-icon">
               <input
                 type="password"
                 id="confirmPassword"
-                placeholder="Re-Enter your password"
+                placeholder="Re-enter your password"
                 required
+                autocomplete="new-password"
               >
+              <button type="button" class="input-icon" id="toggleConfirm" aria-label="Toggle confirm password visibility">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="eye-off-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
             </div>
           </div>
 
-          <!-- Button -->
-
-          <button type="submit" class="signup-btn">
-            Create Account
-          </button>
+          <!-- Submit -->
+          <button type="submit" class="signup-btn">Create Account</button>
 
         </form>
-
-        <!-- Login Text -->
 
         <p class="login-text">
           Already have an account?
           <a href="login.html">Login</a>
         </p>
       </div>
+
     </div>
   </div>
 
   <script>
-
-    function showToast(message){
-
-      const toast = document.getElementById("toast");
-
-      toast.innerHTML = message;
-
-      toast.classList.add("show");
-
-      setTimeout(() => {
-
-        toast.classList.remove("show");
-
-      },3000);
-
+    /* ── Eye toggle helper ── */
+    function wireToggle(btnId, inputId) {
+      var btn   = document.getElementById(btnId);
+      var input = document.getElementById(inputId);
+      btn.addEventListener('click', function() {
+        var isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.classList.toggle('visible', isHidden);
+        btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      });
     }
 
-    document.getElementById("signupForm")
-    .addEventListener("submit", function(e){
+    wireToggle('togglePassword', 'password');
+    wireToggle('toggleConfirm',  'confirmPassword');
 
-      e.preventDefault();
+    /* ── Password strength meter ── */
+    var pwInput      = document.getElementById('password');
+    var strengthWrap = document.getElementById('strengthWrap');
+    var strengthFill = document.getElementById('strengthFill');
+    var strengthLbl  = document.getElementById('strengthLabel');
 
-      let password =
-      document.getElementById("password").value;
+    var levels = [
+      { label:'Too short',  color:'#ef4444', w:'15%' },
+      { label:'Weak',       color:'#f97316', w:'35%' },
+      { label:'Fair',       color:'#eab308', w:'60%' },
+      { label:'Good',       color:'#22c55e', w:'80%' },
+      { label:'Strong',     color:'#10b981', w:'100%'},
+    ];
 
-      let confirmPassword =
-      document.getElementById("confirmPassword").value;
+    function calcStrength(pw) {
+      if (pw.length === 0)  return -1;
+      if (pw.length < 8)    return 0;
+      var score = 1;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      return score;
+    }
 
-      // Check Passwords
-      if(password.length < 8){
+    pwInput.addEventListener('input', function() {
+      var val   = this.value;
+      var score = calcStrength(val);
 
-        showToast("Password must be at least 8 characters!");
-
+      if (score < 0) {
+        strengthWrap.classList.remove('show');
         return;
-
       }
 
-      if(password !== confirmPassword){
-
-        showToast("Passwords do not match!");
-
-        return;
-
-      }
-
-      // Success
-
-      showToast("Signup Successful!");
-
-      setTimeout(() => {
-
-        window.location.href = "login.html";
-
-      },1500);
-
+      strengthWrap.classList.add('show');
+      var lv = levels[score];
+      strengthFill.style.width      = lv.w;
+      strengthFill.style.background = lv.color;
+      strengthLbl.textContent       = lv.label;
+      strengthLbl.style.color       = lv.color;
     });
 
+    /* ── Toast ── */
+    function showToast(message, success) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.toggle('success', !!success);
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+
+    /* ── Form submit ── */
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var password        = document.getElementById('password').value;
+      var confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password.length < 8) {
+        showToast('Password must be at least 8 characters!');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match!');
+        return;
+      }
+
+      showToast('Signup Successful! Redirecting…', true);
+      setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+    });
   </script>
 
 </body>

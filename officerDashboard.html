@@ -8,105 +8,119 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --navy:     #07111f;
-      --navy2:    #0d1e36;
-      --navy3:    #112240;
-      --sidebar:  #090f1c;
-      --saffron:  #FF9933;
-      --saff2:    #e07010;
-      --green:    #138808;
-      --green2:   #0d6606;
-      --sky:      #38bdf8;
-      --red:      #ef4444;
-      --white:    #f8fafc;
-      --muted:    #64748b;
-      --border:   rgba(255,255,255,0.07);
-      --card:     rgba(17,34,64,0.85);
-      --font-h:   'Rajdhani', sans-serif;
-      --font-b:   'Noto Sans', sans-serif;
-      --ease:     cubic-bezier(.22,.68,0,1.2);
+      --navy:    #07111f;
+      --navy2:   #0d1e36;
+      --navy3:   #112240;
+      --sidebar: #090f1c;
+      --saffron: #FF9933;
+      --saff2:   #e07010;
+      --green:   #138808;
+      --sky:     #38bdf8;
+      --white:   #f8fafc;
+      --muted:   #64748b;
+      --border:  rgba(255,255,255,0.07);
+      --card:    #0f1e35;
+      --fh: 'Rajdhani', sans-serif;
+      --fb: 'Noto Sans', sans-serif;
     }
 
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body { overflow-x:hidden; background:var(--navy); color:var(--white); font-family:var(--font-b); }
 
-    /* ── decorative bg ── */
+    html, body {
+      overflow-x: hidden;
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--fb);
+    }
+
+    /*
+      KEY FIX: bg-deco and bg-grid use z-index:-1 (negative).
+      This means they NEVER create a stacking context that could
+      trap the sidebar or overlay. Previously z-index:0 on these
+      combined with z-index:1 on .layout was the root cause.
+    */
     .bg-deco {
-      position:fixed; inset:0; z-index:0; pointer-events:none;
+      position: fixed; inset: 0;
+      z-index: -1;
+      pointer-events: none;
       background:
-        radial-gradient(ellipse 70% 55% at 5% 15%,  rgba(255,153,51,.08) 0%, transparent 60%),
-        radial-gradient(ellipse 55% 45% at 95% 85%,  rgba(19,136,8,.08)  0%, transparent 60%),
-        radial-gradient(ellipse 40% 35% at 50% 50%,  rgba(56,189,248,.04) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 55% at 5%  15%, rgba(255,153,51,.08) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 95% 85%, rgba(19,136,8,.08)   0%, transparent 60%),
+        radial-gradient(ellipse 40% 35% at 50% 50%, rgba(56,189,248,.04) 0%, transparent 60%);
     }
     .bg-grid {
-      position:fixed; inset:0; z-index:0; pointer-events:none;
+      position: fixed; inset: 0;
+      z-index: -1;
+      pointer-events: none;
       background-image:
         linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-      background-size:58px 58px;
+      background-size: 58px 58px;
     }
 
-    /* ═══════════════════════
+    /* ══════════════════════════
        LAYOUT
-    ═══════════════════════ */
-    .layout { display:flex; min-height:100vh; position:relative; z-index:1; }
+       NO position/z-index here — that was trapping the sidebar
+    ══════════════════════════ */
+    .layout { display: flex; min-height: 100vh; }
 
-    /* ═══════════════════════
-       SIDEBAR
-    ═══════════════════════ */
+    /* ══════════════════════════
+       SIDEBAR — desktop: sticky flow element
+                 mobile:  fixed overlay (z-index:900)
+    ══════════════════════════ */
     .sidebar {
-      width:252px; flex-shrink:0;
-      background:var(--sidebar);
-      border-right:1px solid var(--border);
-      display:flex; flex-direction:column;
-      position:sticky; top:0; height:100vh;
-      overflow-y:auto; overflow-x:hidden;
-      transition:left .3s cubic-bezier(.4,0,.2,1);
+      width: 252px;
+      flex-shrink: 0;
+      background: #090f1c;          /* always solid — no rgba, no blur */
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      /* desktop sticky */
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
-    /* Sidebar header */
     .sb-header {
-      padding:22px 18px 16px;
-      border-bottom:1px solid var(--border);
-      background:linear-gradient(135deg, rgba(255,153,51,.07), rgba(19,136,8,.04));
-      flex-shrink:0;
+      padding: 22px 18px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,153,51,.07), rgba(19,136,8,.04));
+      flex-shrink: 0;
     }
-    .sb-logo { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .sb-logo { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
     .sb-emblem {
       width:42px; height:42px; border-radius:12px; flex-shrink:0;
-      background:linear-gradient(135deg, var(--saffron), var(--saff2));
+      background: linear-gradient(135deg, var(--saffron), var(--saff2));
       display:flex; align-items:center; justify-content:center;
       font-size:20px;
-      box-shadow:0 4px 18px rgba(255,153,51,.45);
-      animation:pulseLogo 3s ease-in-out infinite;
+      box-shadow: 0 4px 18px rgba(255,153,51,.45);
+      animation: pulseLogo 3s ease-in-out infinite;
     }
     @keyframes pulseLogo {
-      0%,100%{ box-shadow:0 4px 18px rgba(255,153,51,.4); }
-      50%    { box-shadow:0 4px 32px rgba(255,153,51,.75); }
+      0%,100% { box-shadow: 0 4px 18px rgba(255,153,51,.4); }
+      50%      { box-shadow: 0 4px 32px rgba(255,153,51,.75); }
     }
-    .sb-title h2 { font-family:var(--font-h); font-size:17px; font-weight:700; line-height:1.2; }
+    .sb-title h2   { font-family: var(--fh); font-size:17px; font-weight:700; line-height:1.2; }
     .sb-title .sb-sub { font-size:10.5px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; margin-top:2px; }
 
-    /* Officer chip */
     .officer-chip {
-      display:flex; align-items:center; gap:10px;
-      background:rgba(255,153,51,.08);
-      border:1px solid rgba(255,153,51,.18);
-      border-radius:10px; padding:10px 12px;
-      margin-top:12px;
+      display: flex; align-items: center; gap:10px;
+      background: rgba(255,153,51,.08);
+      border: 1px solid rgba(255,153,51,.18);
+      border-radius: 10px; padding:10px 12px;
     }
     .officer-avatar {
       width:34px; height:34px; border-radius:50%; flex-shrink:0;
-      background:linear-gradient(135deg,#FF9933,#138808);
+      background: linear-gradient(135deg,#FF9933,#138808);
       display:flex; align-items:center; justify-content:center;
       font-size:15px; font-weight:700; color:var(--navy);
     }
-    .officer-info { min-width:0; }
     .officer-info strong { display:block; font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .officer-info span   { font-size:10.5px; color:var(--muted); }
 
-    /* Nav links */
-    .sb-nav { padding:12px 8px; flex:1; }
+    .sb-nav { padding:12px 8px; flex:1; overflow-y:auto; }
     .nav-lbl {
       font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
       color:var(--muted); padding:8px 12px 4px; margin-top:6px;
@@ -115,59 +129,62 @@
       width:100%; padding:12px 14px; margin-bottom:2px;
       border:none; background:transparent; color:rgba(248,250,252,.65);
       border-radius:10px; cursor:pointer;
-      font-size:13.5px; font-family:var(--font-b); font-weight:500;
-      transition:background .18s, color .18s, transform .18s;
+      font-size:13.5px; font-family:var(--fb); font-weight:500;
+      transition: background .18s, color .18s, transform .18s;
       text-align:left; display:flex; align-items:center; gap:12px;
     }
     .sb-nav button .ni { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
     .sb-nav button:hover  { background:rgba(255,153,51,.10); color:#fff; transform:translateX(3px); }
     .sb-nav button.active {
-      background:linear-gradient(135deg,rgba(255,153,51,.2),rgba(255,153,51,.07));
-      color:var(--saffron); border-left:3px solid var(--saffron);
+      background: linear-gradient(135deg,rgba(255,153,51,.2),rgba(255,153,51,.07));
+      color: var(--saffron); border-left:3px solid var(--saffron);
     }
-
     .sb-footer {
       padding:14px 18px; border-top:1px solid var(--border);
       font-size:10.5px; color:var(--muted); text-align:center; flex-shrink:0;
     }
 
-    /* ═══════════════════════
-       OVERLAY (mobile)
-    ═══════════════════════ */
+    /* ══════════════════════════
+       OVERLAY  z:800  (below sidebar z:900)
+       NO backdrop-filter — that's what blurred sidebar buttons
+    ══════════════════════════ */
     .overlay {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,.65); z-index:998;
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      z-index: 800;
     }
-    .overlay.open { display:block; }
+    .overlay.open { display: block; }
 
-    /* ═══════════════════════
+    /* ══════════════════════════
        MAIN
-    ═══════════════════════ */
+    ══════════════════════════ */
     .main { flex:1; min-width:0; padding:16px; overflow-x:hidden; }
 
     /* ── TOPBAR ── */
     .topbar {
-      display:flex; align-items:center; justify-content:space-between;
-      background:var(--navy3); border:1px solid var(--border);
+      display: flex; align-items:center; justify-content:space-between;
+      background: var(--navy3); border:1px solid var(--border);
       border-radius:14px; padding:12px 18px; margin-bottom:18px;
-      box-shadow:0 6px 24px rgba(0,0,0,.3); gap:10px;
-      animation:slideDown .55s var(--ease) both;
+      box-shadow: 0 6px 24px rgba(0,0,0,.3); gap:10px;
+      animation: slideDown .5s ease both;
     }
-    @keyframes slideDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:none} }
 
     .topbar-l { display:flex; align-items:center; gap:12px; }
     .topbar-r { display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
 
     .hamburger {
-      display:none; width:38px; height:38px;
+      display: none;
+      width:38px; height:38px;
       border:1px solid rgba(255,153,51,.3); background:rgba(255,153,51,.1);
       border-radius:9px; cursor:pointer; font-size:20px; color:#fff;
       align-items:center; justify-content:center; flex-shrink:0;
-      transition:background .2s;
+      transition: background .2s;
     }
     .hamburger:hover { background:rgba(255,153,51,.22); }
 
-    .page-title { font-family:var(--font-h); font-size:20px; font-weight:700; letter-spacing:.02em; }
+    .page-title { font-family:var(--fh); font-size:20px; font-weight:700; letter-spacing:.02em; }
     .page-sub   { font-size:11.5px; color:var(--muted); }
 
     .online-badge {
@@ -179,7 +196,7 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
     #userEmail {
-      background:rgba(255,255,255,.06); border:1px solid var(--border);
+      background: rgba(255,255,255,.06); border:1px solid var(--border);
       border-radius:999px; padding:6px 12px; font-size:12.5px;
       max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     }
@@ -187,7 +204,7 @@
       padding:7px 14px; border:1px solid rgba(239,68,68,.38);
       background:rgba(239,68,68,.1); color:#f87171;
       border-radius:8px; cursor:pointer; font-size:12.5px;
-      font-family:var(--font-b); white-space:nowrap; transition:background .2s;
+      font-family:var(--fb); white-space:nowrap; transition:background .2s;
     }
     .logout-btn:hover { background:rgba(239,68,68,.22); }
 
@@ -198,12 +215,12 @@
     /* ── TICKER ── */
     .ticker {
       display:flex; align-items:center; gap:10px; overflow:hidden;
-      background:linear-gradient(90deg,rgba(255,153,51,.09),rgba(19,136,8,.05));
+      background: linear-gradient(90deg,rgba(255,153,51,.09),rgba(19,136,8,.05));
       border:1px solid rgba(255,153,51,.15); border-radius:10px;
       padding:9px 16px; margin-bottom:18px;
     }
     .ticker-tag {
-      font-family:var(--font-h); font-size:10.5px; font-weight:700;
+      font-family:var(--fh); font-size:10.5px; font-weight:700;
       letter-spacing:.1em; text-transform:uppercase;
       background:var(--saffron); color:var(--navy);
       padding:3px 8px; border-radius:5px; flex-shrink:0;
@@ -211,7 +228,7 @@
     .ticker-wrap { overflow:hidden; flex:1; }
     .ticker-belt {
       display:flex; gap:60px; white-space:nowrap;
-      animation:tickerRoll 32s linear infinite;
+      animation: tickerRoll 32s linear infinite;
     }
     .ticker-belt span { font-size:12.5px; color:rgba(248,250,252,.78); }
     .ticker-belt span::before { content:'📌 '; }
@@ -219,18 +236,20 @@
 
     /* ── STAT CARDS ── */
     .cards {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
       gap:14px; margin-bottom:18px;
     }
     .card {
       background:var(--card); border:1px solid var(--border);
       border-radius:14px; padding:20px 18px;
-      transition:transform .25s, box-shadow .25s;
+      transition: transform .25s, box-shadow .25s;
       position:relative; overflow:hidden;
-      animation:slideUp .45s var(--ease) both;
+      animation: slideUp .45s ease both;
     }
-    .card:nth-child(1){animation-delay:.04s} .card:nth-child(2){animation-delay:.09s}
-    .card:nth-child(3){animation-delay:.14s} .card:nth-child(4){animation-delay:.19s}
+    .card:nth-child(1){animation-delay:.04s}
+    .card:nth-child(2){animation-delay:.09s}
+    .card:nth-child(3){animation-delay:.14s}
+    .card:nth-child(4){animation-delay:.19s}
     @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
     .card::before {
       content:''; position:absolute; top:0; left:0; right:0;
@@ -243,7 +262,7 @@
     .card:hover { transform:translateY(-5px); box-shadow:0 18px 44px rgba(0,0,0,.35); }
     .card-ico { font-size:24px; margin-bottom:10px; }
     .card h3  { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
-    .card p   { font-family:var(--font-h); font-size:30px; font-weight:700; line-height:1; }
+    .card p   { font-family:var(--fh); font-size:30px; font-weight:700; line-height:1; }
     .card-chg { font-size:11.5px; margin-top:5px; }
     .up   { color:#4ade80; }
     .down { color:#f87171; }
@@ -254,13 +273,13 @@
       border-radius:14px; padding:20px; margin-bottom:18px;
     }
     .chart-box h3 {
-      font-family:var(--font-h); font-size:16px; font-weight:700;
+      font-family:var(--fh); font-size:16px; font-weight:700;
       color:var(--saffron); margin-bottom:14px; letter-spacing:.02em;
     }
 
-    /* ── TWO-COL INFO ROW ── */
+    /* ── INFO ROW ── */
     .info-row {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
       gap:14px; margin-top:18px;
     }
     .info-card {
@@ -268,7 +287,7 @@
       border-radius:14px; padding:20px;
     }
     .info-card h4 {
-      font-family:var(--font-h); font-size:15px; color:var(--saffron);
+      font-family:var(--fh); font-size:15px; color:var(--saffron);
       margin-bottom:12px; letter-spacing:.03em;
     }
     .info-item {
@@ -290,7 +309,7 @@
       background:var(--card); border:1px solid var(--border);
       border-radius:14px; padding:24px; animation:fadeUp .35s ease;
     }
-    .section-box h2 { font-family:var(--font-h); font-size:24px; font-weight:700; margin-bottom:4px; }
+    .section-box h2 { font-family:var(--fh); font-size:24px; font-weight:700; margin-bottom:4px; }
     .sub { font-size:12.5px; color:var(--muted); margin-bottom:18px; }
     .section-box > p { font-size:13.5px; color:rgba(248,250,252,.8); line-height:1.75; margin-bottom:12px; }
 
@@ -303,7 +322,7 @@
     th,td { padding:12px 14px; text-align:left; font-size:12.5px; }
     th {
       background:rgba(255,153,51,.09); color:var(--saffron);
-      font-family:var(--font-h); font-size:10.5px;
+      font-family:var(--fh); font-size:10.5px;
       letter-spacing:.09em; text-transform:uppercase; font-weight:700;
     }
     td { color:rgba(248,250,252,.78); border-bottom:1px solid rgba(255,255,255,.04); }
@@ -314,20 +333,20 @@
       display:inline-block; padding:3px 10px; border-radius:999px;
       font-size:11.5px; font-weight:600;
     }
-    .badge.active  { background:rgba(19,136,8,.18);   color:#4ade80; border:1px solid rgba(19,136,8,.3); }
+    .badge.active  { background:rgba(19,136,8,.18);   color:#4ade80;        border:1px solid rgba(19,136,8,.3); }
     .badge.pending { background:rgba(255,153,51,.13);  color:var(--saffron); border:1px solid rgba(255,153,51,.3); }
-    .badge.closed  { background:rgba(148,163,184,.08); color:var(--muted); border:1px solid var(--border); }
-    .badge.review  { background:rgba(56,189,248,.12);  color:var(--sky); border:1px solid rgba(56,189,248,.3); }
+    .badge.closed  { background:rgba(148,163,184,.08); color:var(--muted);   border:1px solid var(--border); }
+    .badge.review  { background:rgba(56,189,248,.12);  color:var(--sky);     border:1px solid rgba(56,189,248,.3); }
 
     /* ── SERVICE TILES ── */
     .svc-grid {
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr));
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
       gap:10px; margin-bottom:20px;
     }
     .svc-tile {
       background:#0d1e36; border:1px solid var(--border); border-radius:12px;
       padding:16px 8px; text-align:center; cursor:pointer;
-      transition:all .22s; animation:slideUp .45s var(--ease) both;
+      transition: all .22s; animation:slideUp .45s ease both;
     }
     .svc-tile:nth-child(1){animation-delay:.05s} .svc-tile:nth-child(2){animation-delay:.09s}
     .svc-tile:nth-child(3){animation-delay:.13s} .svc-tile:nth-child(4){animation-delay:.17s}
@@ -335,6 +354,35 @@
     .svc-tile:hover { background:rgba(255,153,51,.09); border-color:rgba(255,153,51,.3); transform:translateY(-3px) scale(1.02); }
     .svc-tile .ico  { font-size:24px; display:block; margin-bottom:6px; }
     .svc-tile span  { font-size:11.5px; color:rgba(248,250,252,.75); font-weight:500; line-height:1.3; }
+
+    /* ── QUICK ACTION CARDS ── */
+    .qa-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr));
+      gap:12px; margin-bottom:18px;
+    }
+    .qa-card {
+      display:flex; flex-direction:column; align-items:center; gap:8px;
+      padding:18px 12px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; cursor:pointer; text-align:center;
+      transition: all .22s; animation:slideUp .45s ease both;
+    }
+    .qa-card:hover {
+      background:rgba(255,153,51,.08); border-color:rgba(255,153,51,.3);
+      transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,.28);
+    }
+    .qa-card .qa-icon { font-size:26px; transition:transform .22s ease; }
+    .qa-card:hover .qa-icon { transform:scale(1.18); }
+    .qa-card h4 { font-family:var(--fh); font-size:13px; font-weight:700; }
+    .qa-card p  { font-size:11px; color:var(--muted); line-height:1.4; }
+
+    /* ── SECTION DIVIDER ── */
+    .sec-div {
+      font-family:var(--fh); font-size:11px; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--saffron);
+      margin-bottom:14px; display:flex; align-items:center; gap:8px;
+    }
+    .sec-div::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
 
     /* ── TIMELINE ── */
     .tl-item { display:flex; gap:14px; margin-bottom:16px; animation:fadeUp .4s ease both; }
@@ -346,14 +394,14 @@
     .tl-body p  { font-size:12px; color:var(--muted); }
 
     /* ── SETTINGS ── */
-    .set-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:18px; }
+    .set-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:18px; }
     .frm-grp  { margin-bottom:13px; }
     .frm-grp label { display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:6px; }
     .frm-grp input,
     .frm-grp select {
       width:100%; background:rgba(255,255,255,.05); border:1px solid var(--border);
       border-radius:8px; padding:9px 12px; color:#fff;
-      font-size:13px; font-family:var(--font-b); outline:none; transition:border-color .2s;
+      font-size:13px; font-family:var(--fb); outline:none; transition:border-color .2s;
     }
     .frm-grp input:focus, .frm-grp select:focus { border-color:rgba(255,153,51,.5); }
     .frm-grp select option { background:#112240; }
@@ -369,39 +417,19 @@
     .tog.on::after { left:23px; }
     .save-btn {
       margin-top:18px; padding:11px 26px;
-      background:linear-gradient(135deg,var(--saffron),var(--saff2));
+      background: linear-gradient(135deg,var(--saffron),var(--saff2));
       border:none; border-radius:10px; color:var(--navy);
-      font-weight:700; font-size:13.5px; font-family:var(--font-b);
+      font-weight:700; font-size:13.5px; font-family:var(--fb);
       cursor:pointer; transition:all .2s; box-shadow:0 4px 18px rgba(255,153,51,.3);
     }
     .save-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(255,153,51,.4); }
 
-    /* ── ALERT CARDS (quick actions) ── */
-    .qa-grid {
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-      gap:12px; margin-bottom:18px;
-    }
-    .qa-card {
-      display:flex; flex-direction:column; align-items:center; gap:8px;
-      padding:18px 12px;
-      background:var(--card); border:1px solid var(--border);
-      border-radius:12px; cursor:pointer; text-align:center;
-      transition:all .22s; animation:slideUp .45s var(--ease) both;
-    }
-    .qa-card:hover {
-      background:rgba(255,153,51,.08);
-      border-color:rgba(255,153,51,.3);
-      transform:translateY(-4px);
-      box-shadow:0 14px 36px rgba(0,0,0,.28);
-    }
-    .qa-card .qa-icon { font-size:26px; transition:transform .22s var(--ease); }
-    .qa-card:hover .qa-icon { transform:scale(1.18); }
-    .qa-card h4 { font-family:var(--font-h); font-size:13px; font-weight:700; }
-    .qa-card p  { font-size:11px; color:var(--muted); line-height:1.4; }
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity:1; transform:none; }
 
 
-
-    .logo {
+   .logo {
       font-family: 'Playfair Display', serif;
       font-size: 26px;
       font-weight: 900;
@@ -418,59 +446,76 @@
       object-fit: contain;
       object-position: left center;
     }
-    /* ═══════════════════════
-       RESPONSIVE
-    ═══════════════════════ */
 
-    /* Tablet */
+
+    /* ══════════════════════════
+       TABLET
+    ══════════════════════════ */
     @media (max-width:1024px) {
       .sidebar { width:220px; }
     }
 
-    /* Mobile — sidebar as slide-in overlay */
+    /* ══════════════════════════
+       MOBILE  ≤ 768px
+
+       THE KEY FIXES:
+       1. .layout has NO position/z-index → no stacking context trap
+       2. .sidebar switches to position:fixed with z-index:900
+       3. .overlay z-index:800 (below sidebar)
+       4. sidebar background is #090f1c (solid hex, not rgba)
+       5. NO filter / backdrop-filter on sidebar ever
+    ══════════════════════════ */
     @media (max-width:768px) {
+
       .hamburger { display:flex; }
 
+      /* Full-height slide-in drawer */
       .sidebar {
-        position:fixed; top:0; left:-270px; width:252px; height:100%;
-        z-index:999; overflow-y:auto;
-        filter:none !important;
-        backdrop-filter:none !important;
-        -webkit-backdrop-filter:none !important;
+        position: fixed !important;   /* must override sticky */
+        top: 0;
+        left: -270px;                 /* hidden off-screen */
+        width: 252px;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 900;                 /* above overlay(800) */
+        /* solid hex so nothing shows through */
+        background: #090f1c !important;
+        /* destroy any filter inheritance */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        /* no isolation needed since layout has no z-index */
+        transition: left .28s cubic-bezier(.4,0,.2,1);
       }
-      .sidebar.open { left:0; }
+      .sidebar.open { left: 0; }
 
-      .layout { flex-direction:column; }
+      .layout { flex-direction: column; }
       .main   { padding:10px; }
 
-      .topbar { padding:10px 12px; border-radius:12px; }
+      .topbar { padding:10px 12px; }
       .page-title { font-size:16px; }
       .online-badge { display:none; }
       #userEmail { max-width:100px; font-size:11.5px; padding:5px 9px; }
       .logout-btn { padding:6px 10px; font-size:11.5px; }
 
-      .cards { grid-template-columns:repeat(2,1fr); gap:10px; }
-      .card p { font-size:24px; }
+      .cards    { grid-template-columns:repeat(2,1fr); gap:10px; }
+      .card p   { font-size:24px; }
       .card-ico { font-size:20px; }
 
       .svc-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
-      .info-row  { grid-template-columns:1fr; }
-      .set-grid  { grid-template-columns:1fr; }
-      .qa-grid   { grid-template-columns:repeat(3,1fr); gap:8px; }
+      .qa-grid  { grid-template-columns:repeat(3,1fr); gap:8px; }
+      .info-row { grid-template-columns:1fr; }
+      .set-grid { grid-template-columns:1fr; }
 
       .section-box { padding:16px; }
       .section-box h2 { font-size:20px; }
     }
 
     @media (max-width:420px) {
-      .cards    { grid-template-columns:1fr 1fr; }
-      .svc-grid { grid-template-columns:repeat(3,1fr); }
-      .qa-grid  { grid-template-columns:repeat(2,1fr); }
+      .cards   { grid-template-columns:1fr 1fr; }
+      .qa-grid { grid-template-columns:repeat(2,1fr); }
     }
-
-    /* ── scroll reveal ── */
-    .reveal { opacity:0; transform:translateY(14px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
-    .reveal.visible { opacity:1; transform:none; }
   </style>
 </head>
 <body>
@@ -478,25 +523,24 @@
 <div class="bg-deco"></div>
 <div class="bg-grid"></div>
 
-<!-- Mobile overlay (behind sidebar) -->
+<!-- Overlay: z-index 800, no backdrop-filter -->
 <div class="overlay" id="overlay"></div>
 
+<!-- layout has NO position/z-index -->
 <div class="layout">
 
-  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <!-- ════════ SIDEBAR ════════ -->
   <aside class="sidebar" id="sidebar">
-
     <div class="sb-header">
       <div class="sb-logo">
         <div class="sb-emblem">🏛️</div>
-        <!-- <div class="sb-title">
-          <h2>Officer Portal</h2>
+        <div class="sb-title">
+          <!-- <h2>Officer Portal</h2> -->
+             <div class="logo">
+               <img src="./gallery/stackly-logo (1).webp" alt="GovServe" class="logo-img" />
+             </div>
           <div class="sb-sub">e-Governance Suite</div>
-        </div> -->
-        <div class="logo">
-      <!-- <div class="logo-icon">🏛️</div> -->
-      <img src="./gallery/stackly-logo (1).webp" alt="GovServe" class="logo-img" />
-    </div>
+        </div>
       </div>
       <div class="officer-chip">
         <div class="officer-avatar" id="sbAvatar">O</div>
@@ -509,27 +553,26 @@
 
     <nav class="sb-nav">
       <div class="nav-lbl">Main</div>
-      <button id="nb-dashboard"><span class="ni">🏠</span> Dashboard</button>
-      <button id="nb-applications"><span class="ni">📁</span> Applications</button>
-      <button id="nb-approvals"><span class="ni">✅</span> Approvals</button>
+      <button id="nb-dashboard">    <span class="ni">🏠</span> Dashboard</button>
+      <button id="nb-applications"> <span class="ni">📁</span> Applications</button>
+      <button id="nb-approvals">    <span class="ni">✅</span> Approvals</button>
 
       <div class="nav-lbl">Management</div>
-      <button id="nb-analytics"><span class="ni">📊</span> Analytics</button>
-      <button id="nb-grievance"><span class="ni">📋</span> Grievances</button>
-      <button id="nb-citizens"><span class="ni">👥</span> Citizens</button>
+      <button id="nb-analytics">    <span class="ni">📊</span> Analytics</button>
+      <button id="nb-grievance">    <span class="ni">📋</span> Grievances</button>
+      <button id="nb-citizens">     <span class="ni">👥</span> Citizens</button>
 
       <div class="nav-lbl">Account</div>
-      <button id="nb-reports"><span class="ni">📄</span> Reports</button>
-      <button id="nb-settings"><span class="ni">🔧</span> Settings</button>
+      <button id="nb-reports">      <span class="ni">📄</span> Reports</button>
+      <button id="nb-settings">     <span class="ni">🔧</span> Settings</button>
     </nav>
 
-    <div class="sb-footer">Government of India · Officer v3.1.0</div>
+    <div class="sb-footer">Government of India · v3.1.0</div>
   </aside>
 
-  <!-- ══════════════════ MAIN ══════════════════ -->
+  <!-- ════════ MAIN ════════ -->
   <div class="main">
 
-    <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-l">
         <button class="hamburger" id="hamburger">☰</button>
@@ -545,7 +588,6 @@
       </div>
     </div>
 
-    <!-- Dynamic content -->
     <div id="content"></div>
 
   </div>
@@ -554,18 +596,23 @@
 <script>
 /* ══════════════════════════════════════
    SIDEBAR TOGGLE
+   Uses event listeners only — no inline onclick
 ══════════════════════════════════════ */
-const sidebar   = document.getElementById('sidebar');
-const overlay   = document.getElementById('overlay');
-const hamburger = document.getElementById('hamburger');
+var sidebar   = document.getElementById('sidebar');
+var overlay   = document.getElementById('overlay');
+var hamburger = document.getElementById('hamburger');
 
 hamburger.addEventListener('click', function() {
   sidebar.classList.add('open');
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 });
+
 overlay.addEventListener('click', closeSidebar);
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeSidebar();
+});
 
 function closeSidebar() {
   sidebar.classList.remove('open');
@@ -575,35 +622,50 @@ function closeSidebar() {
 
 /* ══════════════════════════════════════
    NAVIGATION
+   Wires up each button with addEventListener
+   so inline onclick is never needed
 ══════════════════════════════════════ */
-const sections = ['dashboard','applications','approvals','analytics','grievance','citizens','reports','settings'];
+var SECTIONS = ['dashboard','applications','approvals','analytics','grievance','citizens','reports','settings'];
 
-sections.forEach(function(sec) {
-  var btn = document.getElementById('nb-'+sec);
-  if (btn) btn.addEventListener('click', function(){ navigate(sec); });
-});
-
-const sectionTitles = {
-  dashboard:'Dashboard', applications:'Applications', approvals:'Approvals',
-  analytics:'Analytics', grievance:'Grievances', citizens:'Citizens Directory',
-  reports:'Reports', settings:'Settings'
+var TITLES = {
+  dashboard:    'Dashboard',
+  applications: 'Applications',
+  approvals:    'Approval Queue',
+  analytics:    'Analytics',
+  grievance:    'Grievances',
+  citizens:     'Citizens Directory',
+  reports:      'Reports Centre',
+  settings:     'Settings'
 };
+
+SECTIONS.forEach(function(sec) {
+  var btn = document.getElementById('nb-' + sec);
+  if (btn) {
+    btn.addEventListener('click', function() { navigate(sec); });
+  }
+});
 
 function navigate(section) {
   closeSidebar();
-  sections.forEach(function(s){ var b=document.getElementById('nb-'+s); if(b) b.classList.remove('active'); });
-  var ab = document.getElementById('nb-'+section);
-  if (ab) ab.classList.add('active');
-  document.getElementById('pageTitle').textContent = sectionTitles[section] || section;
+  /* update active state */
+  SECTIONS.forEach(function(s) {
+    var b = document.getElementById('nb-' + s);
+    if (b) b.classList.remove('active');
+  });
+  var active = document.getElementById('nb-' + section);
+  if (active) active.classList.add('active');
+  /* update page title */
+  document.getElementById('pageTitle').textContent = TITLES[section] || section;
+  /* render section content */
   renderSection(section);
-  initReveal();
 }
 
 /* ══════════════════════════════════════
    LOGOUT
 ══════════════════════════════════════ */
-document.getElementById('logoutBtn').addEventListener('click', function(){
-  localStorage.clear(); window.location.href='index.html';
+document.getElementById('logoutBtn').addEventListener('click', function() {
+  localStorage.clear();
+  window.location.href = 'index.html';
 });
 
 /* ══════════════════════════════════════
@@ -613,7 +675,7 @@ function renderSection(section) {
   var el = document.getElementById('content');
   el.innerHTML = '';
 
-  /* ── DASHBOARD ── */
+  /* ─── DASHBOARD ─── */
   if (section === 'dashboard') {
     el.innerHTML = `
       <div class="ticker reveal">
@@ -622,47 +684,24 @@ function renderSection(section) {
           <div class="ticker-belt">
             <span>1,042 pending applications awaiting officer review</span>
             <span>Monthly performance report due by 31 May 2025</span>
-            <span>New grievance intake portal launched — officers must update profiles</span>
-            <span>Portal scheduled maintenance: 20 May 2025, 2–4 AM IST</span>
+            <span>New grievance intake portal launched — update your profile</span>
+            <span>Portal maintenance: 20 May 2025, 2–4 AM IST</span>
             <span>1,042 pending applications awaiting officer review</span>
             <span>Monthly performance report due by 31 May 2025</span>
-            <span>New grievance intake portal launched — officers must update profiles</span>
-            <span>Portal scheduled maintenance: 20 May 2025, 2–4 AM IST</span>
+            <span>New grievance intake portal launched — update your profile</span>
+            <span>Portal maintenance: 20 May 2025, 2–4 AM IST</span>
           </div>
         </div>
       </div>
 
       <div class="cards reveal">
-        <div class="card c1">
-          <div class="card-ico">📁</div>
-          <h3>Total Applications</h3>
-          <p>4,820</p>
-          <div class="card-chg up">▲ 12% this month</div>
-        </div>
-        <div class="card c2">
-          <div class="card-ico">✅</div>
-          <h3>Approved Today</h3>
-          <p>186</p>
-          <div class="card-chg up">▲ 8% vs yesterday</div>
-        </div>
-        <div class="card c3">
-          <div class="card-ico">⏳</div>
-          <h3>Pending Review</h3>
-          <p>1,042</p>
-          <div class="card-chg down">▼ 3% vs last week</div>
-        </div>
-        <div class="card c4">
-          <div class="card-ico">📋</div>
-          <h3>Grievances Open</h3>
-          <p>318</p>
-          <div class="card-chg up">▲ 22% resolved today</div>
-        </div>
+        <div class="card c1"><div class="card-ico">📁</div><h3>Total Applications</h3><p>4,820</p><div class="card-chg up">▲ 12% this month</div></div>
+        <div class="card c2"><div class="card-ico">✅</div><h3>Approved Today</h3><p>186</p><div class="card-chg up">▲ 8% vs yesterday</div></div>
+        <div class="card c3"><div class="card-ico">⏳</div><h3>Pending Review</h3><p>1,042</p><div class="card-chg down">▼ 3% vs last week</div></div>
+        <div class="card c4"><div class="card-ico">📋</div><h3>Grievances Open</h3><p>318</p><div class="card-chg up">▲ 22% resolved today</div></div>
       </div>
 
-      <div class="sec-lbl reveal" style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-        Quick Actions
-        <span style="flex:1;height:1px;background:rgba(255,255,255,.07);display:block;"></span>
-      </div>
+      <div class="sec-div reveal">Quick Actions</div>
       <div class="qa-grid reveal">
         <div class="qa-card"><div class="qa-icon">📥</div><h4>New Application</h4><p>Submit for review</p></div>
         <div class="qa-card"><div class="qa-icon">🔍</div><h4>Verify Docs</h4><p>Document check</p></div>
@@ -680,9 +719,9 @@ function renderSection(section) {
       <div class="info-row reveal">
         <div class="info-card">
           <h4>🔔 Recent Activity</h4>
-          <div class="info-item"><span>Application #APP-20510 approved</span><strong style="color:#4ade80">Done</strong></div>
+          <div class="info-item"><span>#APP-20510 approved</span><strong style="color:#4ade80">Done</strong></div>
           <div class="info-item"><span>Grievance #GR-5502 assigned</span><strong style="color:var(--saffron)">Pending</strong></div>
-          <div class="info-item"><span>Bulk approvals — 42 certificates</span><strong style="color:#4ade80">Done</strong></div>
+          <div class="info-item"><span>Bulk approvals — 42 certs</span><strong style="color:#4ade80">Done</strong></div>
           <div class="info-item"><span>Escalation #ESC-2210 created</span><strong style="color:#f87171">Urgent</strong></div>
           <div class="info-item"><span>Monthly stats submitted</span><strong style="color:#60a5fa">In Review</strong></div>
         </div>
@@ -697,36 +736,34 @@ function renderSection(section) {
       [3200,3800,4100,4500,3900,4200,4800,5100],
       [3050,3600,3980,4420,3750,4100,4650,4980]
     );
-    drawProgress('progMain', [
-      { label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
-      { label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)' },
-      { label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
-      { label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    drawProgress('progMain',[
+      {label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)'},
+      {label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)'},
+      {label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)'},
+      {label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)'},
     ]);
   }
 
-  /* ── APPLICATIONS ── */
+  /* ─── APPLICATIONS ─── */
   else if (section === 'applications') {
     el.innerHTML = `
       <div class="section-box">
         <h2>📁 Applications Management</h2>
         <p class="sub">Review, process, and manage all citizen service applications.</p>
-
         <div class="svc-grid">
           ${[['🪪','Aadhaar'],['🚗','Driving Lic.'],['🏠','Land Records'],
              ['💰','Income Cert.'],['📦','Ration Card'],['🏥','Health Card'],
              ['🎓','Scholarship'],['💡','Electricity'],['🚰','Water Supply'],
              ['🏗️','Building Permit'],['🌾','Farmer Aid'],['💼','Employment']
-          ].map(function(x){ return '<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>'; }).join('')}
+          ].map(function(x){return'<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>';}).join('')}
         </div>
-
-        <h4 style="font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:4px;">📋 Pending Applications</h4>
+        <h4 style="font-family:var(--fh);font-size:16px;color:var(--saffron);margin-bottom:4px;">📋 Pending Applications</h4>
         <div class="tbl-wrap">
           <table>
-            <tr><th>App ID</th><th>Citizen</th><th>Service</th><th>Applied On</th><th>Department</th><th>Status</th></tr>
+            <tr><th>App ID</th><th>Citizen</th><th>Service</th><th>Applied On</th><th>Dept.</th><th>Status</th></tr>
             <tr><td>#APP-20520</td><td>Ramaiah K.</td><td>Income Certificate</td><td>12 May 2025</td><td>Revenue</td><td><span class="badge pending">Pending</span></td></tr>
             <tr><td>#APP-20518</td><td>Fatima B.</td><td>Ration Card Renewal</td><td>10 May 2025</td><td>Civil Supplies</td><td><span class="badge review">In Review</span></td></tr>
-            <tr><td>#APP-20510</td><td>Suresh T.</td><td>Health Card (PMJAY)</td><td>08 May 2025</td><td>Health & FW</td><td><span class="badge active">Approved</span></td></tr>
+            <tr><td>#APP-20510</td><td>Suresh T.</td><td>Health Card (PMJAY)</td><td>08 May 2025</td><td>Health &amp; FW</td><td><span class="badge active">Approved</span></td></tr>
             <tr><td>#APP-20504</td><td>Anita M.</td><td>Scholarship Form</td><td>04 May 2025</td><td>Education</td><td><span class="badge pending">Pending</span></td></tr>
             <tr><td>#APP-20499</td><td>Venkat R.</td><td>Building Permit</td><td>30 Apr 2025</td><td>Mun. Corp.</td><td><span class="badge closed">Rejected</span></td></tr>
             <tr><td>#APP-20490</td><td>Lakshmi P.</td><td>Driving Licence</td><td>28 Apr 2025</td><td>Transport</td><td><span class="badge active">Approved</span></td></tr>
@@ -735,19 +772,17 @@ function renderSection(section) {
       </div>`;
   }
 
-  /* ── APPROVALS ── */
+  /* ─── APPROVALS ─── */
   else if (section === 'approvals') {
     el.innerHTML = `
       <div class="section-box">
         <h2>✅ Approval Queue</h2>
         <p class="sub">Applications awaiting your authority. Avg. processing time: 2.4 days.</p>
-
         <div class="cards" style="margin-bottom:18px">
           <div class="card c1"><div class="card-ico">⏳</div><h3>Awaiting Approval</h3><p>142</p><div class="card-chg up">High priority: 18</div></div>
           <div class="card c2"><div class="card-ico">✅</div><h3>Approved Today</h3><p>56</p><div class="card-chg up">▲ 14% vs yesterday</div></div>
           <div class="card c3"><div class="card-ico">❌</div><h3>Rejected Today</h3><p>7</p><div class="card-chg down">Incomplete docs</div></div>
         </div>
-
         <div class="tbl-wrap">
           <table>
             <tr><th>App ID</th><th>Citizen</th><th>Service</th><th>Submitted</th><th>Priority</th><th>Action</th></tr>
@@ -758,40 +793,33 @@ function renderSection(section) {
             <tr><td>#APP-20511</td><td>Lalitha P.</td><td>Water Connection</td><td>09 May 2025</td><td><span class="badge active">Normal</span></td><td><span class="badge closed">Rejected</span></td></tr>
           </table>
         </div>
-
         <div id="tlApprovals" style="margin-top:22px"></div>
       </div>`;
 
-    var tla = document.getElementById('tlApprovals');
-    var evts = [
-      { c:'#4ade80', t:'Bulk Approval — 42 Income Certificates', m:'Today, 11:20 AM · Revenue Department clearance' },
-      { c:'#FF9933', t:'Escalation #ESC-2210 Raised', m:'Today, 9:45 AM · Building permit under legal scrutiny' },
-      { c:'#60a5fa', t:'New Batch Assigned — 56 Applications', m:'Yesterday, 4:00 PM · From District Collector office' },
-      { c:'#a78bfa', t:'Monthly Approval Target Achieved',  m:'08 May 2025 · 98.2% approval rate this month' },
-    ];
-    tla.innerHTML = '<h4 style="font-family:\'Rajdhani\',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:14px;">📅 Approval Activity</h4>' +
-    evts.map(function(e,i){ return '<div class="tl-item" style="animation-delay:'+i*.08+'s"><div class="tl-side"><div class="tl-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>'+(i<evts.length-1?'<div class="tl-line"></div>':'')+'</div><div class="tl-body"><h5>'+e.t+'</h5><p>'+e.m+'</p></div></div>'; }).join('');
+    buildTimeline('tlApprovals','📅 Approval Activity',[
+      {c:'#4ade80',t:'Bulk Approval — 42 Income Certificates',  m:'Today, 11:20 AM · Revenue Dept. clearance'},
+      {c:'#FF9933',t:'Escalation #ESC-2210 Raised',             m:'Today, 9:45 AM · Building permit under legal scrutiny'},
+      {c:'#60a5fa',t:'New Batch Assigned — 56 Applications',    m:'Yesterday, 4:00 PM · From District Collector office'},
+      {c:'#a78bfa',t:'Monthly Approval Target Achieved',         m:'08 May 2025 · 98.2% approval rate this month'},
+    ]);
   }
 
-  /* ── ANALYTICS ── */
+  /* ─── ANALYTICS ─── */
   else if (section === 'analytics') {
     el.innerHTML = `
       <div class="section-box">
         <h2>📊 Analytics Overview</h2>
         <p class="sub">Officer performance metrics and departmental statistics.</p>
-
         <div class="cards" style="margin-bottom:18px">
           <div class="card c1"><div class="card-ico">📬</div><h3>Applications YTD</h3><p>42,810</p><div class="card-chg up">▲ 25% vs last year</div></div>
           <div class="card c2"><div class="card-ico">⏱️</div><h3>Avg Resolution</h3><p>2.4 Days</p><div class="card-chg up">▼ 18% faster</div></div>
           <div class="card c3"><div class="card-ico">⭐</div><h3>Officer Rating</h3><p>4.8/5</p><div class="card-chg up">▲ 3% this quarter</div></div>
           <div class="card c4"><div class="card-ico">🏆</div><h3>Compliance</h3><p>98.2%</p><div class="card-chg up">▲ 1.4% this month</div></div>
         </div>
-
         <div class="chart-box" style="margin-bottom:18px">
-          <h3>📉 Applications Processed vs Approved (Monthly)</h3>
+          <h3>📉 Applications Processed vs Approved</h3>
           <canvas id="analyticsChart" height="88"></canvas>
         </div>
-
         <div class="tbl-wrap">
           <table>
             <tr><th>Month</th><th>Received</th><th>Approved</th><th>Rejected</th><th>Pending</th><th>Avg Days</th></tr>
@@ -801,7 +829,6 @@ function renderSection(section) {
             <tr><td>April</td><td>4,500</td><td>4,420</td><td>55</td><td>25</td><td>2.3</td></tr>
           </table>
         </div>
-
         <div class="info-row" style="margin-top:18px">
           <div class="info-card">
             <h4>📌 Dept. Workload</h4>
@@ -818,46 +845,40 @@ function renderSection(section) {
         </div>
       </div>`;
 
-    setTimeout(function() {
+    setTimeout(function(){
       var ctx = document.getElementById('analyticsChart');
       if (!ctx) return;
-      new Chart(ctx, {
+      new Chart(ctx,{
         type:'bar',
-        data:{
-          labels:['Jan','Feb','Mar','Apr','May','Jun'],
+        data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],
           datasets:[
-            { label:'Received',  data:[3200,3800,4100,4500,3900,4200], backgroundColor:'rgba(255,153,51,.45)', borderColor:'#FF9933', borderWidth:2, borderRadius:5 },
-            { label:'Approved',  data:[3050,3600,3980,4420,3750,4100], backgroundColor:'rgba(19,136,8,.45)',  borderColor:'#138808', borderWidth:2, borderRadius:5 },
-          ]
-        },
-        options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8' } } },
-          scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+            {label:'Received',data:[3200,3800,4100,4500,3900,4200],backgroundColor:'rgba(255,153,51,.45)',borderColor:'#FF9933',borderWidth:2,borderRadius:5},
+            {label:'Approved',data:[3050,3600,3980,4420,3750,4100],backgroundColor:'rgba(19,136,8,.45)', borderColor:'#138808',borderWidth:2,borderRadius:5},
+          ]},
+        options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},
+          scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}}}
       });
-    }, 80);
-
-    drawProgress('deptProg', [
-      { label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
-      { label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)' },
-      { label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
-      { label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    },80);
+    drawProgress('deptProg',[
+      {label:'Revenue Dept.',  pct:82, color:'linear-gradient(90deg,#FF9933,#ffcc00)'},
+      {label:'Civil Supplies', pct:67, color:'linear-gradient(90deg,#138808,#00c853)'},
+      {label:'Health & FW',   pct:73, color:'linear-gradient(90deg,#3b82f6,#06b6d4)'},
+      {label:'Education',     pct:55, color:'linear-gradient(90deg,#8b5cf6,#ec4899)'},
     ]);
   }
 
-  /* ── GRIEVANCES ── */
+  /* ─── GRIEVANCES ─── */
   else if (section === 'grievance') {
     el.innerHTML = `
       <div class="section-box">
         <h2>📋 Grievance Management</h2>
         <p class="sub">Track and resolve citizen complaints. Target resolution: 4 days.</p>
-
         <div class="cards" style="margin-bottom:18px">
           <div class="card c1"><div class="card-ico">📬</div><h3>Open Grievances</h3><p>318</p><div class="card-chg up">▲ 5 new today</div></div>
           <div class="card c2"><div class="card-ico">✅</div><h3>Resolved Today</h3><p>42</p><div class="card-chg up">▲ 12% avg</div></div>
           <div class="card c3"><div class="card-ico">⚠️</div><h3>SLA Breach Risk</h3><p>23</p><div class="card-chg down">Needs attention</div></div>
         </div>
-
         <div id="tlGriev" style="margin-bottom:20px"></div>
-
         <div class="tbl-wrap">
           <table>
             <tr><th>Ticket</th><th>Citizen</th><th>Issue</th><th>Department</th><th>Filed</th><th>Status</th></tr>
@@ -870,30 +891,25 @@ function renderSection(section) {
         </div>
       </div>`;
 
-    var tl = document.getElementById('tlGriev');
-    var gevts = [
-      { c:'#4ade80', t:'#GR-5510 Assigned to DISCOM Officer Sharma', m:'Today, 10:32 AM' },
-      { c:'#FF9933', t:'#GR-5508 Escalated — SLA Breach Imminent', m:'Yesterday, 3:15 PM' },
-      { c:'#60a5fa', t:'Bulk Resolution — 120 tickets closed', m:'08 May 2025' },
-      { c:'#a78bfa', t:'SMS Notification System Activated', m:'01 May 2025' },
-    ];
-    tl.innerHTML = '<h4 style="font-family:\'Rajdhani\',sans-serif;font-size:16px;color:var(--saffron);margin-bottom:12px;">📅 Recent Updates</h4>' +
-    gevts.map(function(e,i){ return '<div class="tl-item" style="animation-delay:'+i*.08+'s"><div class="tl-side"><div class="tl-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>'+(i<gevts.length-1?'<div class="tl-line"></div>':'')+'</div><div class="tl-body"><h5>'+e.t+'</h5><p>'+e.m+'</p></div></div>'; }).join('');
+    buildTimeline('tlGriev','📅 Recent Updates',[
+      {c:'#4ade80',t:'#GR-5510 Assigned to DISCOM Officer Sharma', m:'Today, 10:32 AM'},
+      {c:'#FF9933',t:'#GR-5508 Escalated — SLA Breach Imminent',   m:'Yesterday, 3:15 PM'},
+      {c:'#60a5fa',t:'Bulk Resolution — 120 tickets closed',        m:'08 May 2025'},
+      {c:'#a78bfa',t:'SMS Notification System Activated',           m:'01 May 2025'},
+    ]);
   }
 
-  /* ── CITIZENS ── */
+  /* ─── CITIZENS ─── */
   else if (section === 'citizens') {
     el.innerHTML = `
       <div class="section-box">
         <h2>👥 Citizens Directory</h2>
         <p class="sub">Overview of registered citizens and their service records.</p>
-
         <div class="cards" style="margin-bottom:18px">
           <div class="card c1"><div class="card-ico">🧑‍🤝‍🧑</div><h3>Total Registered</h3><p>2.4 L</p><div class="card-chg up">▲ 5% this month</div></div>
           <div class="card c2"><div class="card-ico">✅</div><h3>Verified Citizens</h3><p>2.1 L</p><div class="card-chg up">88% verified</div></div>
           <div class="card c3"><div class="card-ico">⏳</div><h3>Pending Verification</h3><p>18,400</p><div class="card-chg down">Awaiting docs</div></div>
         </div>
-
         <div class="tbl-wrap">
           <table>
             <tr><th>Name</th><th>Aadhaar</th><th>District</th><th>Active Apps</th><th>Verified</th><th>Status</th></tr>
@@ -905,7 +921,6 @@ function renderSection(section) {
             <tr><td>Kavitha Devi</td><td>XXXX-1155</td><td>Krishna</td><td>1</td><td>No</td><td><span class="badge pending">Pending</span></td></tr>
           </table>
         </div>
-
         <div class="info-row" style="margin-top:18px">
           <div class="info-card">
             <h4>📌 District Distribution</h4>
@@ -922,33 +937,30 @@ function renderSection(section) {
         </div>
       </div>`;
 
-    drawProgress('distProg', [
-      { label:'Krishna',    pct:78, color:'linear-gradient(90deg,#FF9933,#ffcc00)' },
-      { label:'Guntur',     pct:62, color:'linear-gradient(90deg,#138808,#00c853)' },
-      { label:'Vijayawada', pct:55, color:'linear-gradient(90deg,#3b82f6,#06b6d4)' },
-      { label:'Nellore',    pct:44, color:'linear-gradient(90deg,#8b5cf6,#ec4899)' },
+    drawProgress('distProg',[
+      {label:'Krishna',    pct:78, color:'linear-gradient(90deg,#FF9933,#ffcc00)'},
+      {label:'Guntur',     pct:62, color:'linear-gradient(90deg,#138808,#00c853)'},
+      {label:'Vijayawada', pct:55, color:'linear-gradient(90deg,#3b82f6,#06b6d4)'},
+      {label:'Nellore',    pct:44, color:'linear-gradient(90deg,#8b5cf6,#ec4899)'},
     ]);
   }
 
-  /* ── REPORTS ── */
+  /* ─── REPORTS ─── */
   else if (section === 'reports') {
     el.innerHTML = `
       <div class="section-box">
         <h2>📄 Reports Centre</h2>
         <p class="sub">Generate, download, and submit departmental performance reports.</p>
-
         <div class="svc-grid" style="margin-bottom:24px">
           ${[['📊','Monthly Stats'],['📋','Case Summary'],['📈','Performance'],
              ['🏆','Compliance'],['💸','Subsidy Audit'],['📬','Grievance Log'],
-             ['👥','Officer Report'],['🗂️','Archive'],
-          ].map(function(x){ return '<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>'; }).join('')}
+             ['👥','Officer Report'],['🗂️','Archive']
+          ].map(function(x){return'<div class="svc-tile"><span class="ico">'+x[0]+'</span><span>'+x[1]+'</span></div>';}).join('')}
         </div>
-
         <div class="chart-box" style="margin-bottom:18px">
           <h3>📉 Monthly Report Summary — 2025</h3>
           <canvas id="reportChart" height="82"></canvas>
         </div>
-
         <div class="tbl-wrap">
           <table>
             <tr><th>Report</th><th>Period</th><th>Generated By</th><th>Date</th><th>Status</th></tr>
@@ -961,31 +973,28 @@ function renderSection(section) {
         </div>
       </div>`;
 
-    setTimeout(function() {
+    setTimeout(function(){
       var ctx = document.getElementById('reportChart');
       if (!ctx) return;
-      new Chart(ctx, {
+      new Chart(ctx,{
         type:'line',
-        data:{
-          labels:['Jan','Feb','Mar','Apr','May','Jun'],
+        data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],
           datasets:[
-            { label:'Reports Filed',  data:[12,14,11,16,13,15], borderColor:'#FF9933', backgroundColor:'rgba(255,153,51,.07)', borderWidth:2.5, pointBackgroundColor:'#FF9933', pointRadius:4, tension:.4, fill:true },
-            { label:'On-Time', data:[11,13,11,15,12,14], borderColor:'#138808', backgroundColor:'rgba(19,136,8,.07)', borderWidth:2.5, pointBackgroundColor:'#138808', pointRadius:4, tension:.4, fill:true },
-          ]
-        },
-        options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8' } } },
-          scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+            {label:'Reports Filed',data:[12,14,11,16,13,15],borderColor:'#FF9933',backgroundColor:'rgba(255,153,51,.07)',borderWidth:2.5,pointBackgroundColor:'#FF9933',pointRadius:4,tension:.4,fill:true},
+            {label:'On-Time',      data:[11,13,11,15,12,14],borderColor:'#138808',backgroundColor:'rgba(19,136,8,.07)',  borderWidth:2.5,pointBackgroundColor:'#138808',pointRadius:4,tension:.4,fill:true},
+          ]},
+        options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},
+          scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}}}
       });
-    }, 80);
+    },80);
   }
 
-  /* ── SETTINGS ── */
+  /* ─── SETTINGS ─── */
   else if (section === 'settings') {
     el.innerHTML = `
       <div class="section-box">
         <h2>🔧 Account Settings</h2>
         <p class="sub">Update your officer profile, notifications, and security preferences.</p>
-
         <div class="set-grid">
           <div class="info-card">
             <h4>👤 Officer Profile</h4>
@@ -993,7 +1002,7 @@ function renderSection(section) {
             <div class="frm-grp"><label>Employee ID</label><input type="text" value="GVT-OFF-2021-184"/></div>
             <div class="frm-grp"><label>Designation</label><input type="text" value="District Officer"/></div>
             <div class="frm-grp"><label>Department</label>
-              <select><option>Revenue</option><option>Civil Supplies</option><option>Health & FW</option><option>Education</option></select>
+              <select><option>Revenue</option><option>Civil Supplies</option><option>Health &amp; FW</option><option>Education</option></select>
             </div>
             <div class="frm-grp"><label>District</label>
               <select><option>Krishna</option><option>Guntur</option><option>Vijayawada</option><option>Nellore</option></select>
@@ -1021,13 +1030,14 @@ function renderSection(section) {
       </div>`;
 
     document.querySelectorAll('.tog').forEach(function(t){
-      t.addEventListener('click', function(){ this.classList.toggle('on'); });
+      t.addEventListener('click',function(){this.classList.toggle('on');});
     });
-    document.getElementById('saveBtn').addEventListener('click', function(){
+    document.getElementById('saveBtn').addEventListener('click',function(){
       var name = document.getElementById('nameInput').value.trim();
-      if (name) { localStorage.setItem('officerName', name); updateOfficerChip(); }
+      if (name){localStorage.setItem('officerName',name); updateOfficerChip();}
       this.textContent = '✅ Saved!';
-      setTimeout(function(){ document.getElementById('saveBtn') && (document.getElementById('saveBtn').textContent = '💾 Save Changes'); }, 2000);
+      var btn = this;
+      setTimeout(function(){ if(btn) btn.textContent='💾 Save Changes'; },2000);
     });
   }
 
@@ -1035,51 +1045,56 @@ function renderSection(section) {
 }
 
 /* ══════════════════════════════════════
-   CHART HELPERS
+   HELPERS
 ══════════════════════════════════════ */
+function buildTimeline(id, title, events) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = '<h4 style="font-family:\'Rajdhani\',sans-serif;font-size:16px;color:#FF9933;margin-bottom:12px;">' + title + '</h4>'
+    + events.map(function(e,i){
+        return '<div class="tl-item" style="animation-delay:'+(i*.08)+'s">'
+          +'<div class="tl-side"><div class="tl-dot" style="background:'+e.c+';box-shadow:0 0 7px '+e.c+'88"></div>'
+          +(i<events.length-1?'<div class="tl-line"></div>':'')+'</div>'
+          +'<div class="tl-body"><h5>'+e.t+'</h5><p>'+e.m+'</p></div></div>';
+      }).join('');
+}
+
 function drawLineChart(id, labels, d1, d2) {
   setTimeout(function(){
     var ctx = document.getElementById(id);
     if (!ctx) return;
-    new Chart(ctx, {
+    new Chart(ctx,{
       type:'line',
-      data:{
-        labels:labels,
+      data:{labels:labels,
         datasets:[
-          { label:'Applications', data:d1, borderColor:'#FF9933', backgroundColor:'rgba(255,153,51,.07)', borderWidth:2.5, pointBackgroundColor:'#FF9933', pointRadius:4, tension:.4, fill:true },
-          { label:'Approved',     data:d2, borderColor:'#138808', backgroundColor:'rgba(19,136,8,.07)',   borderWidth:2.5, pointBackgroundColor:'#138808', pointRadius:4, tension:.4, fill:true },
-        ]
-      },
-      options:{ responsive:true, plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:12} } } },
-        scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}} } }
+          {label:'Applications',data:d1,borderColor:'#FF9933',backgroundColor:'rgba(255,153,51,.07)',borderWidth:2.5,pointBackgroundColor:'#FF9933',pointRadius:4,tension:.4,fill:true},
+          {label:'Approved',    data:d2,borderColor:'#138808',backgroundColor:'rgba(19,136,8,.07)',  borderWidth:2.5,pointBackgroundColor:'#138808',pointRadius:4,tension:.4,fill:true},
+        ]},
+      options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}}},
+        scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(255,255,255,.04)'}}}}
     });
-  }, 80);
+  },80);
 }
 
-function drawProgress(containerId, items) {
-  var el = document.getElementById(containerId);
+function drawProgress(id, items) {
+  var el = document.getElementById(id);
   if (!el) return;
   el.innerHTML = items.map(function(it){
-    return '<div class="prog-item"><div class="prog-lbl"><span>'+it.label+'</span><span>'+it.pct+'%</span></div><div class="prog-bar"><div class="prog-fill" data-pct="'+it.pct+'" style="background:'+it.color+'"></div></div></div>';
+    return '<div class="prog-item"><div class="prog-lbl"><span>'+it.label+'</span><span>'+it.pct+'%</span></div>'
+      +'<div class="prog-bar"><div class="prog-fill" data-pct="'+it.pct+'" style="background:'+it.color+'"></div></div></div>';
   }).join('');
   setTimeout(function(){
     el.querySelectorAll('.prog-fill').forEach(function(b){ b.style.width = b.dataset.pct+'%'; });
-  }, 80);
+  },80);
 }
 
-/* ══════════════════════════════════════
-   SCROLL REVEAL
-══════════════════════════════════════ */
 function initReveal() {
   var obs = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, { threshold:0.06 });
+    entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('visible'); obs.unobserve(e.target);} });
+  },{threshold:0.06});
   document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
 }
 
-/* ══════════════════════════════════════
-   OFFICER CHIP
-══════════════════════════════════════ */
 function updateOfficerChip() {
   var email = localStorage.getItem('userEmail') || 'officer@gov.in';
   var name  = localStorage.getItem('officerName') || email.split('@')[0];
@@ -1089,9 +1104,7 @@ function updateOfficerChip() {
   document.getElementById('sbAvatar').textContent  = cap.charAt(0).toUpperCase();
 }
 
-/* ══════════════════════════════════════
-   INIT
-══════════════════════════════════════ */
+/* ── INIT ── */
 updateOfficerChip();
 navigate('dashboard');
 </script>
