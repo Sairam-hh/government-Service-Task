@@ -170,11 +170,14 @@
     .select-wrap { position: relative; }
 
     /* Hidden native select — still interactive for accessibility / form submit */
-    .select-wrap select {
+    /* .select-wrap select {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       opacity: 0; cursor: pointer; z-index: 3;
-    }
+    } */
+     .select-wrap select {
+     display: none;
+     }
 
     /* Visible styled face */
     .select-face {
