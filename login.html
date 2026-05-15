@@ -594,6 +594,11 @@
 
   var role  = nativeSelect.value;
   var email = document.getElementById('email');
+  if(role === ''){
+  document.getElementById('roleError').textContent =
+  'Please select a role';
+  return;
+}
 
   // Email validation
   const emailValue = email.value;
